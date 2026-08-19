@@ -1,7 +1,6 @@
 import { SignedImage } from "@/components/SignedImage";
 import styles from "./introduction.module.css"
 import BlurText from "@/components/TextEffect";
-import Threads from "@/components/Threads";
 
 export default function Introduction() {
 	return (
@@ -23,10 +22,6 @@ export default function Introduction() {
 					</div>
 				</div>
 			</div>
-{/* 
-			<div>
-				<Threads />
-			</div> */}
 
 			{/* <div className={styles.about_me}>
 				<SignedImage path="Introduction.webp" alt="Introduction" className={styles.image} />
