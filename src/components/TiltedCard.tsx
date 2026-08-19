@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'motion/react';
 import { SignedImage } from '@/components/SignedImage';
-import './TiltedCard.css';
+import './tiltedcard.css';
 
 const springValues = {
     damping: 30,
