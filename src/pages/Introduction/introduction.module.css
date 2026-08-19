@@ -53,18 +53,117 @@
 
         i {
             font-size: 22px;
+            cursor: pointer;
+            transition: scale 0.2s ease-in-out, color 0.2s ease-in-out;
+
+            &:hover {
+                color: grey;
+                scale: 1.05;
+            }
+        }
+    }
+
+    .resume_button {
+        border-radius: 20px;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: scale 0.2s ease-in-out;
+
+        &:hover {
+            scale: 1.05;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
         }
     }
 }
 
 .about_me {
+    margin: auto;
     margin-top: 30px;
-    display: flex;
-    flex-direction: column;
     align-items: center;
+    border-radius: 20px;
+    box-shadow: 0 0 10px var(--light-text);
+    padding: 20px;
+    max-width: 80vw;
     justify-content: center;
-    
-    img {
+    gap: 10px 20px;
+    display: grid;
+    grid-template-columns: auto auto;
+
+    .title {
+        grid-column: 1 / -1;
+        text-align: center;
+        font-size: 36px;
+    }
+
+    .image {
         max-height: 400px;
+    }
+
+    article {
+        color: #303030;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+}
+
+.card_container {
+    margin-top: 50px;
+    position: relative;
+    height: 600px;
+    overflow: hidden;
+
+    .title {
+        anchor-name: --card-title;
+        position: absolute;
+        top: 50%;
+        left: 10vw;
+        font-weight: bold;
+        translate: 0 -50%;
+        font-size: 36px;
+    }
+
+    .subtitle {
+        position: absolute;
+        margin-top: 10px;
+        font-size: 20px;
+        top: anchor(--card-title bottom);
+        left: anchor(--card-title left);
+    }
+
+    .card {
+        display: flex;
+        flex-direction: column;
+
+        h3 {
+            height: max-content;
+            grid-column: 1 / -1;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        div {
+            height: 100%;
+            display: flex;
+            padding-right: 80px;
+            gap: 10px;
+        }
+
+        p {
+            line-height: 1.5;
+        }
+
+        img {
+            object-fit: cover;
+            height: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+        }
     }
 }

@@ -1,0 +1,12 @@
+.footer {
+    color: var(--light-text);
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    padding-bottom: 10px;
+
+    a {
+        margin-left: 5px;
+        color: inherit;
+    }
+}

@@ -5,6 +5,8 @@
 
 :root {
 	--content-background: #ffffff;
+	--light-text: #b3b3b3;
+
 	font-family: "Geist Variable", sans-serif;
     box-sizing: border-box;
 }
