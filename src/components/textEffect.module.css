@@ -1,0 +1,11 @@
+.blur_segment {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(40px);
+
+    &.show {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+    }
+}

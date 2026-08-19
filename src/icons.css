@@ -1,0 +1,129 @@
+@font-face {
+    font-family: "Font Awesome 7 Pro";
+    font-style: normal;
+    font-weight: 900;
+    font-display: block;
+    src: url("/webfonts/solid.ttf") format("truetype")
+}
+
+@font-face {
+    font-family: "Font Awesome 7 Pro";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("/webfonts/regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Font Awesome 7 Brands";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("/webfonts/brands.ttf") format("truetype")
+}
+
+.fa-brands,
+.fa-solid,
+.fa-regular {
+    --_fa-family: var(--fa-family, var(--fa-style-family, "Font Awesome 7 Pro"));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: var(--fa-display, inline-block);
+    font-family: var(--_fa-family);
+    font-feature-settings: normal;
+    font-style: normal;
+    font-synthesis: none;
+    font-variant: normal;
+    font-weight: var(--fa-style, 900);
+    line-height: 1;
+    text-align: center;
+    text-rendering: auto;
+    width: var(--fa-width, 1.25em)
+}
+
+:is(.fa-solid, .fa-brands, .fa-regular):before {
+    content: var(--fa);
+    content: var(--fa)/""
+}
+
+:host,
+:root {
+    --fa-family-brands: "Font Awesome 7 Brands";
+    --fa-family-classic: "Font Awesome 7 Pro";
+    --fa-font-brands: normal 400 1em/1 var(--fa-family-brands);
+    --fa-font-solid: normal 900 1em/1 var(--fa-family-classic);
+    --fa-font-regular: normal 400 1em/1 var(--fa-family-classic);
+}
+
+.fa-brands {
+    --fa-family: var(--fa-family-brands);
+    --fa-style: 400
+}
+
+.fa-solid {
+    --fa-style: 900
+}
+
+.fa-regular {
+    --fa-style: 400;
+}
+
+.fa-brands:before {
+    content: var(--fa)
+}
+
+.fa-instagram {
+    --fa: "\f16d"
+}
+
+.fa-facebook {
+    --fa: "\f09a"
+}
+
+.fa-linkedin {
+    --fa: "\f0e1"
+}
+
+.fa-whatsapp {
+    --fa: "\f232"
+}
+
+.fa-chevron-left {
+    --fa: "\f053"
+}
+
+.fa-chevron-right {
+    --fa: "\f054"
+}
+
+.fa-party-horn {
+    --fa: "\e31b"
+}
+
+.fa-expand {
+    --fa: "\f424"
+}
+
+.fa-compress {
+    --fa: "\f422"
+}
+
+.fa-music {
+    --fa: "\f001"
+}
+
+.fa-hand {
+    --fa: "\f256"
+}
+
+.fa-clock {
+    --fa: "\f017"
+}
+
+.fa-comment {
+    --fa: "\f075"
+}
+
+.fa-envelope {
+    --fa: "\f0e0"
+}

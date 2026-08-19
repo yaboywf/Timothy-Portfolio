@@ -1,0 +1,46 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+:root {
+	--content-background: #ffffff;
+	font-family: "Geist Variable", sans-serif;
+    box-sizing: border-box;
+}
+
+main {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+
+	h3 {
+		font-size: 20px;
+		text-align: center;
+	}
+}
+
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background-color: transparent;
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: grey;
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: #555;
+}
+
+@media screen and (max-width: 250px) {
+	* {
+		display: none;
+	}
+}
