@@ -2,17 +2,15 @@ import { SignedImage } from "@/components/SignedImage";
 import styles from "./content.module.css"
 import BlurText from "@/components/TextEffect";
 import CardSwap, { Card } from "@/components/CardSwap";
-// import Projects from "@/data/Projects.json"
-import Educations from "@/data/Education.json"
 import TiltedCard from "@/components/TiltedCard";
-import Experiences from "@/data/Experience.json";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { type Projects } from "../admin/Admin";
 import { supabase } from "@/lib/supabase";
 import MDEditor from "@uiw/react-md-editor"
 
 export default function Introduction() {
-	const [projects, setProjects] = useState<Projects[]>([])
+	const [list, setList] = useState<Projects[]>([])
+	const [general, setGeneral] = useState<Record<string, string>>({});
 
 	useEffect(() => {
 		async function getProjects(): Promise<void> {
@@ -24,12 +22,46 @@ export default function Introduction() {
 				console.log(error)
 			} else {
 				console.log(data)
-				setProjects(data)
+				setList(data)
 			}
 		}
 
+		async function getGeneral(): Promise<void> {
+            const { data, error } = await supabase
+                .from("General")
+                .select("Label, Text")
+
+            if (error) {
+                console.error(error)
+                return
+            }
+
+            setGeneral(
+                Object.fromEntries(
+                    (data ?? []).map((item) => [item.Label, item.Text])
+                )
+            )
+        }
+
 		getProjects()
+		getGeneral()
 	}, [])
+
+	const projects = useMemo(() => {
+		return list.filter(item => item.Type === "Project")
+	}, [list])
+
+	const work = useMemo(() => {
+		return list.filter(item => item.Type === "Work")
+	}, [list])
+
+	const hobbies = useMemo(() => {
+		return list.filter(item => item.Type === "Hobby")
+	}, [list])
+
+	const educations = useMemo(() => {
+		return list.filter(item => item.Type === "Education").sort((a, b) => new Date(b.Created).getTime() - new Date(a.Created).getTime())
+	}, [list])
 
 	return (
 		<>
@@ -40,7 +72,7 @@ export default function Introduction() {
 				<div className={styles.container}>
 					<BlurText text="Hello!" className={styles.subtitle} />
 					<BlurText text="I'm Timothy Ho" className={styles.title} />
-					<p>Year 3 DARE student | Diploma in Aeronautical Engineering</p>
+					<p data-color-mode="light"><MDEditor.Markdown source={general["Profile Subtitle"]} /></p>
 
 					<div className={styles.media_container}>
 						<i className="fa-brands fa-whatsapp" onClick={() => window.open("https://api.whatsapp.com/send?phone=6588019782")}></i>
@@ -57,16 +89,8 @@ export default function Introduction() {
 			<div className={styles.about_me}>
 				<h2 className={styles.title}>About Me</h2>
 				<SignedImage path="Introduction.webp" alt="Introduction" className={styles.image} />
-				<article>
-					I am currently pursuing a Diploma in Aeronautical Engineering at Singapore Polytechnic, where I have built a strong foundation in aircraft systems, avionics, aircraft powerplant, aerodynamics, engineering mechanics, and CAD design using CATIA. My passion for aviation extends into Formula 1, where I am especially interested in aerodynamics and performance engineering.
-					<br /><b></b>
-					Through my studies, I have gained technical knowledge in aircraft electrical and instrument systems, navigation systems, propulsion systems, and engineering design principles. A key highlight was completing a cornerstone project where my team and I designed and built a glider, allowing me to apply concepts such as aerodynamics, stability, structural design, and weight optimisation while strengthening my teamwork and problem-solving skills.
-					<br /><br />
-					I am also pursuing an Aviation Management Certificate, where I learned about airline operations, airport terminal operations, ramp operations, and airside safety. These modules broadened my understanding of the aviation industry beyond engineering and strengthened my appreciation for operational efficiency and coordination within airports and airlines.
-					<br /><br />
-					Beyond academics, I am an active member of Singapore Polytechnic’s Bowling School Team and Aviation Club. Competing in events such as the Singapore International Open has strengthened my discipline and ability to perform under pressure. I also participated in F1 in Schools, which further developed my interest in engineering innovation, teamwork, and performance optimisation.
-					<br /><br />
-					As an aspiring aeronautical engineer, I am eager to continue learning and contribute meaningfully to the aerospace industry through both technical and operational knowledge.
+				<article data-color-mode="light">
+					<MDEditor.Markdown source={general["About Me Description"]} />
 				</article>
 			</div>
 
@@ -98,15 +122,15 @@ export default function Introduction() {
 				</div>
 
 				<div className={styles.education_container}>
-					{Educations.map(education => (
+					{educations.map(education => (
 						<div className={styles.card} key={education.Title}>
 							<div className={styles.left}>
-								<img src={`/images/${education.Picture}`} alt={education.Title} />
+								<SignedImage path={education.Picture} alt={education.Title} className={styles.image} />
 								<div className={styles.line}></div>
 							</div>
 							<div>
 								<h2>{education.Title}</h2>
-								<p>{education.Description}</p>
+								<p data-color-mode="light"><MDEditor.Markdown source={education.Description} /></p>
 							</div>
 						</div>
 					))}
@@ -116,10 +140,10 @@ export default function Introduction() {
 			<div className={`${styles.hobbies_container} ${styles.work_container}`}>
 				<h2>Work Also Matters!</h2>
 
-				{Experiences.map(experience => <>
+				{work.map(experience => <>
 					<TiltedCard
 						imageSrc={experience.Picture}
-						isSignedImage={false}
+						isSignedImage={true}
 						overlayContent={
 							<div className={styles.overlay}>
 								<h1>{experience.Title}</h1>
@@ -128,44 +152,32 @@ export default function Introduction() {
 						captionText={experience.Title}
 					/>
 
-					<p>
-						{experience.Description}
+					<p data-color-mode="light">
+						<MDEditor.Markdown source={experience.Description} />
 					</p>
 				</>)}
 			</div>
 
 			<div className={styles.hobbies_container}>
 				<h2>Not Just Work</h2>
+				
+				{hobbies.map(hobby =>
+					<TiltedCard
+						key={hobby.ID}
+						imageSrc={hobby.Picture}
+						isSignedImage={true}
+						overlayContent={
+							<div className={styles.overlay}>
+								<h1>{hobby.Title}</h1>
+							</div>
+						}
+						captionText={hobby.Title}
+					/>
+				)}
 
-				<TiltedCard
-					imageSrc="Competitive-Bowling.webp"
-					isSignedImage={true}
-					overlayContent={
-						<div className={styles.overlay}>
-							<h1>Competitive Bowling</h1>
-						</div>
-					}
-					captionText="Competitive Bowling"
-				/>
-
-				<TiltedCard
-					imageSrc="F1.webp"
-					isSignedImage={true}
-					overlayContent={
-						<div className={styles.overlay}>
-							<h1>Formula 1</h1>
-						</div>
-					}
-					captionText="Formula 1"
-				/>
-
-				<p className={styles.f1_text}>
-					A passionate Formula 1 enthusiast who regularly attends F1 events and engages with the sport beyond simply watching races. Formula 1 has developed my appreciation for engineering, precision, innovation, and continuous improvement, while teaching me the importance of perseverance and resilience — a mistake or setback does not mean the race is over, but rather an opportunity to keep pushing forward. My interest extends into the technical side of the sport, where I independently use CAD to design and model Formula 1 cars, allowing me to explore vehicle aerodynamics, structural design, and engineering principles through a practical and creative approach.
-				</p>
-
-				<p className={styles.bowling_text}>
-					Represented and competed in the Singapore International Open (SIO), gaining experience competing against high-level bowlers in an international competitive environment. Also represented my team in the National Service Games (NSG) and regularly participate in local bowling leagues. These experiences have strengthened my discipline, consistency, mental resilience, and ability to perform under pressure while competing both individually and as part of a team.
-				</p>
+				{hobbies.map(hobby => <p className={styles.f1_text1} key={hobby.Title} data-color-mode="light">
+					<MDEditor.Markdown source={hobby.Description} />
+				</p>)}
 			</div>
 
 			<p className={styles.footer}>Project made with ❤️ by <a href="https://dylanyeowf.pages.dev">Dylan</a></p>

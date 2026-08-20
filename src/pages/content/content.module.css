@@ -302,6 +302,10 @@
     @media (max-width: 850px) {
         padding: 30px;
     }
+
+    :global(.wmde-markdown) {
+        background: transparent;
+    }
 }
 
 .hobbies_container {

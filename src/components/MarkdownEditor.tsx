@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+
 import MDEditor from "@uiw/react-md-editor"
 
 type Props = {
@@ -13,10 +14,18 @@ export function MarkdownEditor({
     const [markdown, setMarkdown] = useState(initialValue)
     const [saving, setSaving] = useState(false)
 
+    useEffect(() => {
+        setMarkdown(initialValue)
+    }, [initialValue])
+
     async function handleSave() {
         setSaving(true)
-        await onSave(markdown)
-        setSaving(false)
+
+        try {
+            await onSave(markdown)
+        } finally {
+            setSaving(false)
+        }
     }
 
     return (
@@ -25,13 +34,6 @@ export function MarkdownEditor({
                 value={markdown}
                 onChange={(value) => setMarkdown(value ?? "")}
                 height={280}
-                commandsFilter={(command) => {
-                    if (command.name === "image" || command.name === "fullscreen") {
-                        return false
-                    }
-
-                    return command
-                }}
             />
 
             <button onClick={handleSave} disabled={saving}>

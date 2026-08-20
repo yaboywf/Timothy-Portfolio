@@ -4,7 +4,6 @@
     right: 0;
     transform: translate(5%, 20%);
     transform-origin: bottom right;
-
     perspective: 900px;
     overflow: visible;
 }
