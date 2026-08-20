@@ -1,6 +1,27 @@
 .introduction {
     display: flex;
+    position: relative;
     min-height: 100vh;
+
+    @media (max-width: 850px) {
+        .container {
+            width: 80vw;
+            justify-content: center;
+            text-align: center;
+            top: 70%;
+            left: 50%;
+            padding: 20px;
+            translate: -50% -50%;
+            position: absolute;
+            background: rgba(255, 255, 255, .6);
+            backdrop-filter: blur(14px) saturate(140%);
+            border-radius: 20px;
+
+            .title {
+                justify-content: center;
+            }
+        }
+    }
 }
 
 .image_container {
@@ -96,6 +117,19 @@
     display: grid;
     grid-template-columns: auto auto;
 
+    @media (max-width: 850px) {
+        display: block;
+
+        .title {
+            margin-bottom: 10px;
+        }
+
+        .image {
+            margin-right: 10px;
+            float: left;
+        }
+    }
+
     .title {
         grid-column: 1 / -1;
         text-align: center;
@@ -127,6 +161,10 @@
         font-weight: bold;
         translate: 0 -50%;
         font-size: 36px;
+
+        @media (max-width: 850px) {
+            top: 20%;
+        }
     }
 
     .subtitle {
@@ -177,6 +215,11 @@
     margin-top: 120px;
     justify-content: center;
     align-items: center;
+
+    @media (max-width: 850px) {
+        flex-direction: column;
+        
+    }
 
     .education_title {
         height: 100%;
@@ -251,12 +294,14 @@
 }
 
 .work_container {
-    width: 100%;
     max-width: none !important;
     margin: 50px 0 !important;
     padding: 30px 80px;
     background: #f5f5f5;
-    box-sizing: border-box
+
+    @media (max-width: 850px) {
+        padding: 30px;
+    }
 }
 
 .hobbies_container {
@@ -264,18 +309,50 @@
     margin: 80px auto;
     display: grid;
     gap: 30px;
-    grid-template-columns: auto auto;
+    grid-template-areas:
+        "title title"
+        "bowling-card f1-card"
+        "bowling-text f1-text";
+
+    @media (max-width: 850px) {
+        max-width: 90vw;
+        grid-template-areas:
+            "title"
+            "bowling-card"
+            "bowling-text"
+			"f1-card"
+			"f1-text";
+	}
 
     h2 {
         font-size: 36px;
+        grid-area: title;
         text-align: center;
         grid-column: 1 / -1;
         margin: 30px;
     }
 
-    p {
+    > p {
         color: grey;
         line-height: 1.5;
+
+        &.f1_text {
+            grid-area: f1-text;
+        }
+
+        &.bowling_text {
+            grid-area: bowling-text;
+        }
+    }
+
+    figure {
+        &:first-child {
+            grid-area: bowling-card;
+        }
+
+        &:last-child {
+            grid-area: f1-card;
+        }
     }
 }
 

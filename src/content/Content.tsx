@@ -136,11 +136,11 @@ export default function Introduction() {
 					captionText="Formula 1"
 				/>
 
-				<p>
+				<p className={styles.f1_text}>
 					A passionate Formula 1 enthusiast who regularly attends F1 events and engages with the sport beyond simply watching races. Formula 1 has developed my appreciation for engineering, precision, innovation, and continuous improvement, while teaching me the importance of perseverance and resilience — a mistake or setback does not mean the race is over, but rather an opportunity to keep pushing forward. My interest extends into the technical side of the sport, where I independently use CAD to design and model Formula 1 cars, allowing me to explore vehicle aerodynamics, structural design, and engineering principles through a practical and creative approach.
 				</p>
 
-				<p>
+				<p className={styles.bowling_text}>
 					Represented and competed in the Singapore International Open (SIO), gaining experience competing against high-level bowlers in an international competitive environment. Also represented my team in the National Service Games (NSG) and regularly participate in local bowling leagues. These experiences have strengthened my discipline, consistency, mental resilience, and ability to perform under pressure while competing both individually and as part of a team.
 				</p>
 			</div>
