@@ -12,28 +12,21 @@ const imageCache = new Map<
 	{ url: string; expiresAt: number }
 >();
 
-async function getImageBlobUrl(path: string) {
+async function getCachedSignedImage(path: string) {
 	const cached = imageCache.get(path);
 
 	if (cached && cached.expiresAt > Date.now()) {
 		return cached.url;
 	}
 
-	const signedUrl = await getSignedImage(path);
-	const response = await fetch(signedUrl);
-
-	if (!response.ok) {
-		throw new Error("Could not download image");
-	}
-
-	const blobUrl = URL.createObjectURL(await response.blob());
+	const url = await getSignedImage(path);
 
 	imageCache.set(path, {
-		url: blobUrl,
+		url,
 		expiresAt: Date.now() + CACHE_DURATION,
 	});
 
-	return blobUrl;
+	return url;
 }
 
 export function SignedImage({ path, alt, ...props }: SignedImageProps) {
@@ -46,9 +39,9 @@ export function SignedImage({ path, alt, ...props }: SignedImageProps) {
 		setUrl(undefined);
 		setError(false);
 
-		getImageBlobUrl(path)
-			.then((blobUrl) => {
-				if (!cancelled) setUrl(blobUrl);
+		getCachedSignedImage(path)
+			.then((signedUrl) => {
+				if (!cancelled) setUrl(signedUrl);
 			})
 			.catch(() => {
 				if (!cancelled) setError(true);

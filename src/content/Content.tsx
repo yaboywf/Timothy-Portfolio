@@ -1,5 +1,5 @@
 import { SignedImage } from "@/components/SignedImage";
-import styles from "./introduction.module.css"
+import styles from "./content.module.css"
 import BlurText from "@/components/TextEffect";
 import CardSwap, { Card } from "@/components/CardSwap";
 import Projects from "@/data/Projects.json"
