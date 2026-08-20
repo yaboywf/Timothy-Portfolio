@@ -2,12 +2,35 @@ import { SignedImage } from "@/components/SignedImage";
 import styles from "./content.module.css"
 import BlurText from "@/components/TextEffect";
 import CardSwap, { Card } from "@/components/CardSwap";
-import Projects from "@/data/Projects.json"
+// import Projects from "@/data/Projects.json"
 import Educations from "@/data/Education.json"
 import TiltedCard from "@/components/TiltedCard";
 import Experiences from "@/data/Experience.json";
+import { useEffect, useState } from "react";
+import { type Projects } from "../admin/Admin";
+import { supabase } from "@/lib/supabase";
+import MDEditor from "@uiw/react-md-editor"
 
 export default function Introduction() {
+	const [projects, setProjects] = useState<Projects[]>([])
+
+	useEffect(() => {
+		async function getProjects(): Promise<void> {
+			const { data, error } = await supabase
+				.from("Projects")
+				.select("*")
+
+			if (error) {
+				console.log(error)
+			} else {
+				console.log(data)
+				setProjects(data)
+			}
+		}
+
+		getProjects()
+	}, [])
+
 	return (
 		<>
 			<div className={styles.introduction}>
@@ -53,15 +76,15 @@ export default function Introduction() {
 				<CardSwap
 					cardDistance={60}
 					verticalDistance={70}
-					delay={15000}
+					delay={10000}
 					pauseOnHover={false}
 				>
-					{Projects.map(project => (
+					{projects.map(project => (
 						<Card className={styles.card}>
-							<h3>{project.Name}</h3>
-							<div>
-								<SignedImage path={project.Picture} alt={project.Name} className={styles.image} />
-								<p>{project.Description}</p>
+							<h3>{project.Title}</h3>
+							<div data-color-mode="light">
+								<SignedImage path={project.Picture} alt={project.Title} className={styles.image} />
+								<MDEditor.Markdown source={project.Description} />
 							</div>
 						</Card>
 					))}
