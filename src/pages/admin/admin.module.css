@@ -1,42 +1,336 @@
 /* Admin page styling – modern editor look */
 
-/* Container for the entire admin page */
 .adminContainer {
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
-    color: var(--text-color);
+    color: var(--text-color, #1a1a1a);
+    font-family: inherit;
 }
 
-/* Individual project card */
+/* Header section */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.headerTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.headerActions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+/* Base Buttons */
+.btn {
+    font-family: inherit;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btnPrimary {
+    background: var(--primary, #333);
+    color: #fff;
+}
+
+.btnPrimary:hover:not(:disabled) {
+    background: var(--primary-hover, #555);
+    transform: translateY(-1px);
+}
+
+.btnSecondary {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-color, #333);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.btnSecondary:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.btnDanger {
+    background: #e63946;
+    color: #fff;
+}
+
+.btnDanger:hover:not(:disabled) {
+    background: #c92a37;
+}
+
+.btnDangerOutline {
+    background: transparent;
+    color: #e63946;
+    border: 1px solid #e63946;
+}
+
+.btnDangerOutline:hover:not(:disabled) {
+    background: rgba(230, 57, 70, 0.1);
+}
+
+.btnSmall {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Section Header */
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+}
+
+.sectionTitle {
+    font-size: 1.45rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.sectionSubtitle {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+/* Media Manager Section */
+.mediaManager {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.mediaUploadRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+
+.uploadInputWrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.uploadInputWrapper input[type="file"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.mediaGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.mediaCard {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mediaCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.mediaThumbnailWrapper {
+    width: 100%;
+    height: 120px;
+    border-radius: 6px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.mediaThumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mediaName {
+    font-size: 0.82rem;
+    font-weight: 600;
+    word-break: break-all;
+    line-height: 1.2;
+    color: #222;
+}
+
+.mediaActions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+/* Item Card */
 .projectCard {
-    background: var(--glass-bg);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     display: flex;
     flex-direction: column;
+    gap: 1.2rem;
+}
+
+.cardTopRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 1rem;
+}
+
+.cardTypeBadge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.08);
+    color: #555;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.formLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
 }
 
 /* Title input styling */
 .projectTitleInput {
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
+    padding: 0.65rem 0.85rem;
+    font-size: 1.05rem;
+    font-weight: 600;
     border: 1px solid #ccc;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text-color);
+    border-radius: 8px;
+    background: #fafafa;
+    color: var(--text-color, #111);
     outline: none;
-    transition: background 0.2s ease, border-color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .projectTitleInput:focus {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: var(--primary);
+    background: #fff;
+    border-color: var(--primary, #444);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Image reference selector row */
+.imageRefContainer {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    background: rgba(0, 0, 0, 0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px dashed rgba(0, 0, 0, 0.15);
+}
+
+.imageInputs {
+    flex: 1;
+    min-width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.imageTextInput {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    outline: none;
+}
+
+.imageSelectInput {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.88rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+}
+
+.imagePreviewBox {
+    width: 100px;
+    height: 80px;
+    border-radius: 6px;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+.imagePreviewBox img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* Wrapper for the markdown editor */
@@ -46,25 +340,71 @@
     overflow: hidden;
 }
 
-/* Button inside markdown editor (inherits styles from login) */
-.markdownWrapper button {
-    margin-top: 10px;
-    font-family: inherit;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 6px;
-    background: var(--primary);
-    color: #fff;
-    cursor: pointer;
-    transition: background 0.2s ease;
+/* Card bottom actions */
+.cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.markdownWrapper button:hover {
-    background: var(--primary-hover);
+.statusMessage {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #666;
+}
+
+.emptySectionPrompt {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+    color: #666;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.alertError {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+.alertSuccess {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
 }
 
 @media (max-width: 768px) {
     .adminContainer {
         padding: 1rem;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .imageRefContainer {
+        flex-direction: column;
+    }
+
+    .imagePreviewBox {
+        width: 100%;
+        height: 120px;
     }
 }

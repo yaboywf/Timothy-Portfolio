@@ -34,6 +34,12 @@ export function SignedImage({ path, alt, ...props }: SignedImageProps) {
 	const [error, setError] = useState(false);
 
 	useEffect(() => {
+		if (!path) {
+			setUrl(undefined);
+			setError(false);
+			return;
+		}
+
 		let cancelled = false;
 
 		setUrl(undefined);
@@ -52,6 +58,7 @@ export function SignedImage({ path, alt, ...props }: SignedImageProps) {
 		};
 	}, [path]);
 
+	if (!path) return <div style={{ color: "#888", fontStyle: "italic", fontSize: "0.85rem" }}>No image selected</div>;
 	if (error) return <div>Error loading image...</div>;
 	if (!url) return <div>Loading image...</div>;
 
