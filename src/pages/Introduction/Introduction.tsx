@@ -144,6 +144,8 @@ export default function Introduction() {
 					Represented and competed in the Singapore International Open (SIO), gaining experience competing against high-level bowlers in an international competitive environment. Also represented my team in the National Service Games (NSG) and regularly participate in local bowling leagues. These experiences have strengthened my discipline, consistency, mental resilience, and ability to perform under pressure while competing both individually and as part of a team.
 				</p>
 			</div>
+
+			<p className={styles.footer}>Project made with ❤️ by <a href="https://dylanyeowf.pages.dev">Dylan</a></p>
 		</>
 	);
 }

@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite'
 import { visualizer } from 'rollup-plugin-visualizer';
-import react from '@vitejs/plugin-react'
+import preact from "@preact/preset-vite";
 
 // https://vite.dev/config/
 export default defineConfig({
 	plugins: [
-		react(),
+		preact(),
 		visualizer({
 			filename: 'stats.html',
 			open: true,

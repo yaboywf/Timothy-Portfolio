@@ -28,8 +28,16 @@
 }
 
 .tilted-card-inner {
+    --rotate-x: 0deg;
+    --rotate-y: 0deg;
+    --scale: 1;
+
     position: relative;
+    transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y))
+        scale(var(--scale));
     transform-style: preserve-3d;
+    transition: transform 180ms ease-out;
+    will-change: transform;
 }
 
 .tilted-card-img {
@@ -52,15 +60,22 @@
 }
 
 .tilted-card-caption {
+    --caption-x: 0px;
+    --caption-y: 0px;
+    --caption-rotate: 0deg;
+    --caption-opacity: 0;
+
     pointer-events: none;
     position: absolute;
-    left: 0;
-    top: 0;
+    left: var(--caption-x);
+    top: var(--caption-y);
     border-radius: 4px;
     background-color: #fff;
     padding: 4px 10px;
     font-size: 10px;
     color: #2d2d2d;
-    opacity: 0;
+    opacity: var(--caption-opacity);
     z-index: 3;
+    transform: translate(-50%, -50%) rotate(var(--caption-rotate));
+    transition: opacity 180ms ease, transform 120ms ease-out;
 }

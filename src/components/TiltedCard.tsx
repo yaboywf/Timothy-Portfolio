@@ -1,163 +1,136 @@
-import { useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring } from 'motion/react';
-import { SignedImage } from '@/components/SignedImage';
-import './tiltedcard.css';
-
-const springValues = {
-    damping: 30,
-    stiffness: 100,
-    mass: 2
-};
+import { useRef, type ReactNode } from "react";
+import { SignedImage } from "@/components/SignedImage";
+import "./tiltedcard.css";
 
 export interface TiltedCardProps {
-    imageSrc: string;
-    altText?: string;
-    captionText?: string;
-    containerHeight?: string | number;
-    containerWidth?: string | number;
-    imageHeight?: string | number;
-    imageWidth?: string | number;
-    scaleOnHover?: number;
-    rotateAmplitude?: number;
-    showMobileWarning?: boolean;
-    showTooltip?: boolean;
-    overlayContent?: React.ReactNode;
-    displayOverlayContent?: boolean;
-    isSignedImage?: boolean;
+	imageSrc: string;
+	altText?: string;
+	captionText?: string;
+	containerHeight?: string | number;
+	containerWidth?: string | number;
+	imageHeight?: string | number;
+	imageWidth?: string | number;
+	scaleOnHover?: number;
+	rotateAmplitude?: number;
+	showMobileWarning?: boolean;
+	showTooltip?: boolean;
+	overlayContent?: ReactNode;
+	displayOverlayContent?: boolean;
+	isSignedImage?: boolean;
 }
 
 export default function TiltedCard({
-    imageSrc,
-    altText = 'Tilted card image',
-    captionText = '',
-    containerHeight = '300px',
-    containerWidth = '100%',
-    imageHeight = '300px',
-    imageWidth = '300px',
-    scaleOnHover = 1.1,
-    rotateAmplitude = 14,
-    showMobileWarning = true,
-    showTooltip = true,
-    overlayContent = null,
-    displayOverlayContent = true,
-    isSignedImage = false
+	imageSrc,
+	altText = "Tilted card image",
+	captionText = "",
+	containerHeight = "300px",
+	containerWidth = "100%",
+	imageHeight = "300px",
+	imageWidth = "300px",
+	scaleOnHover = 1.1,
+	rotateAmplitude = 14,
+	showMobileWarning = true,
+	showTooltip = true,
+	overlayContent = null,
+	displayOverlayContent = true,
+	isSignedImage = false,
 }: TiltedCardProps) {
-    const ref = useRef<HTMLElement>(null);
+	const figureRef = useRef<HTMLElement>(null);
+	const innerRef = useRef<HTMLDivElement>(null);
+	const captionRef = useRef<HTMLElement>(null);
+	const lastY = useRef(0);
 
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const rotateX = useSpring(useMotionValue(0), springValues);
-    const rotateY = useSpring(useMotionValue(0), springValues);
-    const scale = useSpring(1, springValues);
-    const opacity = useSpring(0);
-    const rotateFigcaption = useSpring(0, {
-        stiffness: 350,
-        damping: 30,
-        mass: 1
-    });
+	function handleMouseMove(event: React.MouseEvent<HTMLElement>) {
+		const figure = figureRef.current;
+		const inner = innerRef.current;
+		const caption = captionRef.current;
 
-    const [lastY, setLastY] = useState(0);
+		if (!figure || !inner) return;
 
-    function handleMouse(e: React.MouseEvent<HTMLElement>) {
-        if (!ref.current) return;
+		const rect = figure.getBoundingClientRect();
+		const offsetX = event.clientX - rect.left - rect.width / 2;
+		const offsetY = event.clientY - rect.top - rect.height / 2;
 
-        const rect = ref.current.getBoundingClientRect();
-        const offsetX = e.clientX - rect.left - rect.width / 2;
-        const offsetY = e.clientY - rect.top - rect.height / 2;
+		const rotateX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
+		const rotateY = (offsetX / (rect.width / 2)) * rotateAmplitude;
 
-        const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
-        const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude;
+		inner.style.setProperty("--rotate-x", `${rotateX}deg`);
+		inner.style.setProperty("--rotate-y", `${rotateY}deg`);
 
-        rotateX.set(rotationX);
-        rotateY.set(rotationY);
+		if (caption) {
+			const velocityY = offsetY - lastY.current;
 
-        x.set(e.clientX - rect.left);
-        y.set(e.clientY - rect.top);
+			caption.style.setProperty("--caption-x", `${event.clientX - rect.left}px`);
+			caption.style.setProperty("--caption-y", `${event.clientY - rect.top}px`);
+			caption.style.setProperty("--caption-rotate", `${-velocityY * 0.6}deg`);
+		}
 
-        const velocityY = offsetY - lastY;
-        rotateFigcaption.set(-velocityY * 0.6);
-        setLastY(offsetY);
-    }
+		lastY.current = offsetY;
+	}
 
-    function handleMouseEnter() {
-        scale.set(scaleOnHover);
-        opacity.set(1);
-    }
+	function handleMouseEnter() {
+		innerRef.current?.style.setProperty("--scale", String(scaleOnHover));
+		captionRef.current?.style.setProperty("--caption-opacity", "1");
+	}
 
-    function handleMouseLeave() {
-        opacity.set(0);
-        scale.set(1);
-        rotateX.set(0);
-        rotateY.set(0);
-        rotateFigcaption.set(0);
-    }
+	function handleMouseLeave() {
+		const inner = innerRef.current;
+		const caption = captionRef.current;
 
-    return (
-        <figure
-            ref={ref}
-            className="tilted-card-figure"
-            style={{
-                height: containerHeight,
-                width: containerWidth
-            }}
-            onMouseMove={handleMouse}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-        >
-            {showMobileWarning && (
-                <div className="tilted-card-mobile-alert">This effect is not optimized for mobile. Check on desktop.</div>
-            )}
+		inner?.style.setProperty("--scale", "1");
+		inner?.style.setProperty("--rotate-x", "0deg");
+		inner?.style.setProperty("--rotate-y", "0deg");
 
-            <motion.div
-                className="tilted-card-inner"
-                style={{
-                    width: imageWidth,
-                    height: imageHeight,
-                    rotateX,
-                    rotateY,
-                    scale
-                }}
-            >
-                {isSignedImage ? (
-                    <SignedImage
-                        path={imageSrc}
-                        alt={altText}
-                        className="tilted-card-img"
-                        style={{
-                            width: imageWidth,
-                            height: imageHeight
-                        }}
-                    />
-                ) : (
-                    <motion.img
-                        src={imageSrc}
-                        alt={altText}
-                        className="tilted-card-img"
-                        style={{
-                            width: imageWidth,
-                            height: imageHeight
-                        }}
-                    />
-                )}
+		caption?.style.setProperty("--caption-opacity", "0");
+		caption?.style.setProperty("--caption-rotate", "0deg");
+	}
 
-                {displayOverlayContent && overlayContent && (
-                    <motion.div className="tilted-card-overlay">{overlayContent}</motion.div>
-                )}
-            </motion.div>
+	return (
+		<figure
+			ref={figureRef}
+			className="tilted-card-figure"
+			style={{ height: containerHeight, width: containerWidth }}
+			onMouseMove={handleMouseMove}
+			onMouseEnter={handleMouseEnter}
+			onMouseLeave={handleMouseLeave}
+		>
+			{showMobileWarning && (
+				<div className="tilted-card-mobile-alert">
+					This effect is not optimized for mobile. Check on desktop.
+				</div>
+			)}
 
-            {showTooltip && (
-                <motion.figcaption
-                    className="tilted-card-caption"
-                    style={{
-                        x,
-                        y,
-                        opacity,
-                        rotate: rotateFigcaption
-                    }}
-                >
-                    {captionText}
-                </motion.figcaption>
-            )}
-        </figure>
-    );
+			<div
+				ref={innerRef}
+				className="tilted-card-inner"
+				style={{ width: imageWidth, height: imageHeight }}
+			>
+				{isSignedImage ? (
+					<SignedImage
+						path={imageSrc}
+						alt={altText}
+						className="tilted-card-img"
+						style={{ width: imageWidth, height: imageHeight }}
+					/>
+				) : (
+					<img
+						src={imageSrc}
+						alt={altText}
+						className="tilted-card-img"
+						style={{ width: imageWidth, height: imageHeight }}
+					/>
+				)}
+
+				{displayOverlayContent && overlayContent && (
+					<div className="tilted-card-overlay">{overlayContent}</div>
+				)}
+			</div>
+
+			{showTooltip && (
+				<figcaption ref={captionRef} className="tilted-card-caption">
+					{captionText}
+				</figcaption>
+			)}
+		</figure>
+	);
 }

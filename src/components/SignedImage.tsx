@@ -1,12 +1,24 @@
-import { useEffect, useMemo, type ImgHTMLAttributes } from "react";
+import { useEffect, useState, type ImgHTMLAttributes } from "react";
 import { getSignedImage } from "@/lib/signed-image";
-import { useQuery } from "@tanstack/react-query";
 
 type SignedImageProps = Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> & {
 	path: string;
 };
 
-async function getImageBlob(path: string): Promise<Blob> {
+const CACHE_DURATION = 2 * 60 * 60 * 1000;
+
+const imageCache = new Map<
+	string,
+	{ url: string; expiresAt: number }
+>();
+
+async function getImageBlobUrl(path: string) {
+	const cached = imageCache.get(path);
+
+	if (cached && cached.expiresAt > Date.now()) {
+		return cached.url;
+	}
+
 	const signedUrl = await getSignedImage(path);
 	const response = await fetch(signedUrl);
 
@@ -14,29 +26,41 @@ async function getImageBlob(path: string): Promise<Blob> {
 		throw new Error("Could not download image");
 	}
 
-	return response.blob();
+	const blobUrl = URL.createObjectURL(await response.blob());
+
+	imageCache.set(path, {
+		url: blobUrl,
+		expiresAt: Date.now() + CACHE_DURATION,
+	});
+
+	return blobUrl;
 }
 
 export function SignedImage({ path, alt, ...props }: SignedImageProps) {
-	const { data: blob, isLoading, error } = useQuery({
-		queryKey: ["signed-image", path],
-		queryFn: () => getImageBlob(path),
-		staleTime: 2 * 60 * 60 * 1000,
-	});
-
-	const url = useMemo(
-		() => (blob ? URL.createObjectURL(blob) : undefined),
-		[blob],
-	);
+	const [url, setUrl] = useState<string>();
+	const [error, setError] = useState(false);
 
 	useEffect(() => {
-		return () => {
-			if (url) URL.revokeObjectURL(url);
-		};
-	}, [url]);
+		let cancelled = false;
 
-	if (isLoading) return <div>Loading image...</div>;
-	if (error || !url) return <div>Error loading image...</div>;
+		setUrl(undefined);
+		setError(false);
+
+		getImageBlobUrl(path)
+			.then((blobUrl) => {
+				if (!cancelled) setUrl(blobUrl);
+			})
+			.catch(() => {
+				if (!cancelled) setError(true);
+			});
+
+		return () => {
+			cancelled = true;
+		};
+	}, [path]);
+
+	if (error) return <div>Error loading image...</div>;
+	if (!url) return <div>Loading image...</div>;
 
 	return <img src={url} alt={alt} {...props} />;
 }
