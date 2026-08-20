@@ -85,6 +85,7 @@ export default function Admin() {
         if (error) {
             console.error("Error fetching images:", error)
         } else {
+            console.log(data)
             setImages((data || []).filter(f => f.name && !f.name.startsWith(".")))
         }
         setLoadingImages(false)
@@ -350,14 +351,9 @@ export default function Admin() {
                     <label className={styles.formLabel}>Description (Markdown)</label>
                     <div className={styles.markdownWrapper}>
                         <MarkdownEditor
-                            initialValue={item.Description}
-                            onSave={async (markdown) => {
+                            value={item.Description}
+                            onChange={(markdown) => {
                                 updateLocalProject(item.ID, { Description: markdown })
-                                await saveProject(item.ID, {
-                                    Title: item.Title,
-                                    Description: markdown,
-                                    Picture: item.Picture,
-                                })
                             }}
                         />
                     </div>
@@ -375,7 +371,7 @@ export default function Admin() {
                         }
                         disabled={savingId === item.ID}
                     >
-                        {savingId === item.ID ? "Saving..." : "Save Card"}
+                        {savingId === item.ID ? "⏳ Saving..." : "💾 Save Changes"}
                     </button>
                     {savingId === item.ID && <span className={styles.statusMessage}>Saving changes...</span>}
                 </div>
@@ -492,15 +488,24 @@ export default function Admin() {
                         <label className={styles.formLabel}>About Me Description (Markdown)</label>
                         <div className={styles.markdownWrapper}>
                             <MarkdownEditor
-                                initialValue={general["About Me Description"] ?? ""}
-                                onSave={async (markdown) => {
-                                    await saveGeneral("About Me Description", markdown)
-                                    await saveGeneral("Profile Subtitle", general["Profile Subtitle"] ?? "")
-                                }}
+                                value={general["About Me Description"] ?? ""}
+                                onChange={(markdown) => updateLocalGeneral("About Me Description", markdown)}
                             />
                         </div>
                     </div>
-                    {savingGeneralLabel && <p className={styles.statusMessage}>Saving About Me...</p>}
+                    <div className={styles.cardFooter}>
+                        <button
+                            className={`${styles.btn} ${styles.btnPrimary}`}
+                            onClick={async () => {
+                                await saveGeneral("About Me Description", general["About Me Description"] ?? "")
+                                await saveGeneral("Profile Subtitle", general["Profile Subtitle"] ?? "")
+                            }}
+                            disabled={savingGeneralLabel !== null}
+                        >
+                            {savingGeneralLabel ? "⏳ Saving..." : "💾 Save About Me"}
+                        </button>
+                        {savingGeneralLabel && <span className={styles.statusMessage}>Saving About Me...</span>}
+                    </div>
                 </div>
             </section>
 

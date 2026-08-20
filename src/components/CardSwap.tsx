@@ -222,7 +222,7 @@ const CardSwap = ({
 
     const rendered = childArr.map((child, i) => {
         if (isValidElement(child)) {
-            const childElement = child as React.ReactElement<any>;
+            const childElement = child as React.ReactElement<{ style?: React.CSSProperties; onClick?: (e: React.MouseEvent) => void; ref?: React.Ref<HTMLElement> }>;
             return cloneElement(childElement, {
                 key: i,
                 ref: refs[i],

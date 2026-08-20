@@ -30,27 +30,27 @@ async function getCachedSignedImage(path: string) {
 }
 
 export function SignedImage({ path, alt, ...props }: SignedImageProps) {
-	const [url, setUrl] = useState<string>();
-	const [error, setError] = useState(false);
+	const [state, setState] = useState<{ path: string; url?: string; error: boolean }>({
+		path,
+		url: undefined,
+		error: false,
+	});
+
+	if (state.path !== path) {
+		setState({ path, url: undefined, error: false });
+	}
 
 	useEffect(() => {
-		if (!path) {
-			setUrl(undefined);
-			setError(false);
-			return;
-		}
+		if (!path) return;
 
 		let cancelled = false;
 
-		setUrl(undefined);
-		setError(false);
-
 		getCachedSignedImage(path)
 			.then((signedUrl) => {
-				if (!cancelled) setUrl(signedUrl);
+				if (!cancelled) setState({ path, url: signedUrl, error: false });
 			})
 			.catch(() => {
-				if (!cancelled) setError(true);
+				if (!cancelled) setState({ path, url: undefined, error: true });
 			});
 
 		return () => {
@@ -59,8 +59,8 @@ export function SignedImage({ path, alt, ...props }: SignedImageProps) {
 	}, [path]);
 
 	if (!path) return <div style={{ color: "#888", fontStyle: "italic", fontSize: "0.85rem" }}>No image selected</div>;
-	if (error) return <div>Error loading image...</div>;
-	if (!url) return <div>Loading image...</div>;
+	if (state.error) return <div>Error loading image...</div>;
+	if (!state.url) return <div>Loading image...</div>;
 
-	return <img src={url} alt={alt} {...props} />;
+	return <img src={state.url} alt={alt} {...props} />;
 }
