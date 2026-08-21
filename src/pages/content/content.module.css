@@ -22,6 +22,10 @@
             }
         }
     }
+
+    :global(.wmde-markdown) {
+        background: transparent;
+    }
 }
 
 .image_container {
@@ -357,6 +361,12 @@
         &:last-child {
             grid-area: f1-card;
         }
+    }
+
+    .hobby {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
 }
 

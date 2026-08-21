@@ -21,27 +21,26 @@ export default function Introduction() {
 			if (error) {
 				console.log(error)
 			} else {
-				console.log(data)
 				setList(data)
 			}
 		}
 
 		async function getGeneral(): Promise<void> {
-            const { data, error } = await supabase
-                .from("General")
-                .select("Label, Text")
+			const { data, error } = await supabase
+				.from("General")
+				.select("Label, Text")
 
-            if (error) {
-                console.error(error)
-                return
-            }
+			if (error) {
+				console.error(error)
+				return
+			}
 
-            setGeneral(
-                Object.fromEntries(
-                    (data ?? []).map((item) => [item.Label, item.Text])
-                )
-            )
-        }
+			setGeneral(
+				Object.fromEntries(
+					(data ?? []).map((item) => [item.Label, item.Text])
+				)
+			)
+		}
 
 		getProjects()
 		getGeneral()
@@ -72,7 +71,7 @@ export default function Introduction() {
 				<div className={styles.container}>
 					<BlurText text="Hello!" className={styles.subtitle} />
 					<BlurText text="I'm Timothy Ho" className={styles.title} />
-					<p data-color-mode="light"><MDEditor.Markdown source={general["Profile Subtitle"]} /></p>
+					<div data-color-mode="light"><MDEditor.Markdown source={general["Profile Subtitle"]} /></div>
 
 					<div className={styles.media_container}>
 						<i className="fa-brands fa-whatsapp" onClick={() => window.open("https://api.whatsapp.com/send?phone=6588019782")}></i>
@@ -130,7 +129,9 @@ export default function Introduction() {
 							</div>
 							<div>
 								<h2>{education.Title}</h2>
-								<p data-color-mode="light"><MDEditor.Markdown source={education.Description} /></p>
+								<div data-color-mode="light">
+									<MDEditor.Markdown source={education.Description} />
+								</div>
 							</div>
 						</div>
 					))}
@@ -152,32 +153,33 @@ export default function Introduction() {
 						captionText={experience.Title}
 					/>
 
-					<p data-color-mode="light">
+					<div data-color-mode="light">
 						<MDEditor.Markdown source={experience.Description} />
-					</p>
+					</div>
 				</>)}
 			</div>
 
 			<div className={styles.hobbies_container}>
 				<h2>Not Just Work</h2>
-				
-				{hobbies.map(hobby =>
-					<TiltedCard
-						key={hobby.ID}
-						imageSrc={hobby.Picture}
-						isSignedImage={true}
-						overlayContent={
-							<div className={styles.overlay}>
-								<h1>{hobby.Title}</h1>
-							</div>
-						}
-						captionText={hobby.Title}
-					/>
-				)}
 
-				{hobbies.map(hobby => <p className={styles.f1_text1} key={hobby.Title} data-color-mode="light">
-					<MDEditor.Markdown source={hobby.Description} />
-				</p>)}
+				{hobbies.map(hobby =>
+					<div className={styles.hobby}>
+						<TiltedCard
+							key={hobby.ID}
+							imageSrc={hobby.Picture}
+							isSignedImage={true}
+							overlayContent={
+								<div className={styles.overlay}>
+									<h1>{hobby.Title}</h1>
+								</div>
+							}
+							captionText={hobby.Title}
+						/>
+						<div data-color-mode="light">
+							<MDEditor.Markdown source={hobby.Description} />
+						</div>
+					</div>
+				)}
 			</div>
 
 			<p className={styles.footer}>Project made with ❤️ by <a href="https://dylanyeowf.pages.dev">Dylan</a></p>
