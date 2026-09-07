@@ -340,7 +340,7 @@ export default function Admin() {
                         </div>
                         <div className={styles.imagePreviewBox}>
                             {item.Picture ? (
-                                <StorageImage path={item.Picture} alt={item.Title} />
+                                <StorageImage path={item.Picture} alt={item.Title}  />
                             ) : (
                                 <span style={{ color: "#888", fontSize: "0.8rem" }}>No image</span>
                             )}

@@ -1,29 +1,26 @@
 import { render } from 'preact'
+import { lazy, Suspense } from "preact/compat"
 import { LocationProvider, Router, Route } from 'preact-iso'
-import "@fontsource-variable/geist/wght.css";
+import Content from './pages/content/Content';
+import { SmoothScroll } from "./components/SmoothScroll"
+import "lenis/dist/lenis.css"
 import './style.css'
 import './icons.css'
-import Content from './pages/content/Content';
-import Login from './pages/login/Login';
-import Admin from './pages/admin/Admin';
-import { RequireAuth } from './components/RequireAuth';
-import { Lenis } from 'lenis/react';
 
-const ProtectedAdmin = () => (
-    <RequireAuth>
-        <Admin />
-    </RequireAuth>
-);
+const Login = lazy(() => import("./pages/login/Login"))
+const ProtectedAdmin = lazy(() => import("./pages/admin/layout"),)
 
 render(
 	<>
-		<Lenis />
+		<SmoothScroll />
 		<LocationProvider>
-			<Router>
-				<Route path="/" component={Content} />
-				<Route path="/login" component={Login} />
-				<Route path="/admin" component={ProtectedAdmin} />
-			</Router>
+			<Suspense fallback={<p>Loading...</p>}>
+				<Router>
+					<Route path="/" component={Content} />
+					<Route path="/login" component={Login} />
+					<Route path="/admin" component={ProtectedAdmin} />
+				</Router>
+			</Suspense>
 		</LocationProvider>
 	</>,
 	document.getElementById('root')!

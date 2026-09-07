@@ -6,7 +6,7 @@ import TiltedCard from "@/components/TiltedCard";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { type Projects } from "../admin/Admin";
 import { supabase } from "@/lib/supabase";
-import { RichTextEditor } from "@/components/RichTextEditor";
+import { RichTextContent } from "@/components/RichTextContent";
 
 export default function Introduction() {
 	const [list, setList] = useState<Projects[]>([])
@@ -66,23 +66,20 @@ export default function Introduction() {
 		<>
 			<div className={styles.introduction}>
 				<div className={styles.image_container}>
-					<StorageImage path="Profile.webp" alt="Profile" className={styles.image} />
+					<StorageImage path="Profile.webp" alt="Profile" className={styles.image} loading="eager" fetchPriority="high" />
 				</div>
 				<div className={styles.container}>
 					<BlurText text="Hello!" className={styles.subtitle} />
 					<BlurText text="I'm Timothy Ho" className={styles.title} />
 					<div data-color-mode="light">
-						<RichTextEditor
-							value={general["Profile Subtitle"] ?? ""}
-							readOnly
-						/>
+						<RichTextContent html={general["Profile Subtitle"] ?? ""} />
 					</div>
 
 					<div className={styles.media_container}>
-						<i className="fa-brands fa-whatsapp" onClick={() => window.open("https://api.whatsapp.com/send?phone=6588019782")}></i>
-						<i className="fa-brands fa-instagram" onClick={() => window.open("https://www.instagram.com/timx.hx")}></i>
-						<i className="fa-regular fa-envelope" onClick={() => window.open("mailto:timmy.yyxx@gmail.com")}></i>
-						<i className="fa-brands fa-linkedin" onClick={() => window.open("https://www.linkedin.com/in/timothyyhoo")}></i>
+						<i className="fa-brands fa-whatsapp" aria-label="Open WhatsApp" onClick={() => window.open("https://api.whatsapp.com/send?phone=6588019782")}></i>
+						<i className="fa-brands fa-instagram" aria-label="Open Instagram" onClick={() => window.open("https://www.instagram.com/timx.hx")}></i>
+						<i className="fa-regular fa-envelope" aria-label="Send Email" onClick={() => window.open("mailto:timmy.yyxx@gmail.com")}></i>
+						<i className="fa-brands fa-linkedin" aria-label="Open LinkedIn" onClick={() => window.open("https://www.linkedin.com/in/timothyyhoo")}></i>
 					</div>
 					<button className={styles.resume_button}>
 						<a href="/Timothy-CV.pdf" download="Timothy-CV.pdf">Download Resume</a>
@@ -92,12 +89,9 @@ export default function Introduction() {
 
 			<div className={styles.about_me}>
 				<h2 className={styles.title}>About Me</h2>
-				<StorageImage path="Introduction.webp" alt="Introduction" className={styles.image} />
+				<StorageImage path="Introduction.webp" alt="Introduction" className={styles.image} loading="lazy" />
 				<article data-color-mode="light">
-					<RichTextEditor
-						value={general["About Me Description"] ?? ""}
-						readOnly
-					/>
+					<RichTextContent html={general["About Me Description"] ?? ""} />
 				</article>
 			</div>
 
@@ -114,11 +108,8 @@ export default function Introduction() {
 						<Card className={styles.card}>
 							<h3>{project.Title}</h3>
 							<div data-color-mode="light">
-								<StorageImage path={project.Picture} alt={project.Title} className={styles.image} />
-								<RichTextEditor
-									value={project.Description}
-									readOnly
-								/>
+								<StorageImage path={project.Picture} alt={project.Title} className={styles.image} loading="lazy" />
+								<RichTextContent html={project.Description} />
 							</div>
 						</Card>
 					))}
@@ -135,16 +126,13 @@ export default function Introduction() {
 					{educations.map(education => (
 						<div className={styles.card} key={education.Title}>
 							<div className={styles.left}>
-								<StorageImage path={education.Picture} alt={education.Title} className={styles.image} />
+								<StorageImage path={education.Picture} alt={education.Title} className={styles.image} loading="lazy" />
 								<div className={styles.line}></div>
 							</div>
 							<div>
 								<h2>{education.Title}</h2>
 								<div data-color-mode="light">
-									<RichTextEditor
-										value={education.Description}
-										readOnly
-									/>
+									<RichTextContent html={education.Description} />
 								</div>
 							</div>
 						</div>
@@ -167,10 +155,7 @@ export default function Introduction() {
 					/>
 
 					<div data-color-mode="light">
-						<RichTextEditor
-							value={experience.Description}
-							readOnly
-						/>
+						<RichTextContent html={experience.Description} />
 					</div>
 				</>)}
 			</div>
@@ -191,10 +176,7 @@ export default function Introduction() {
 							captionText={hobby.Title}
 						/>
 						<div data-color-mode="light">
-							<RichTextEditor
-								value={hobby.Description}
-								readOnly
-							/>
+							<RichTextContent html={hobby.Description} />
 						</div>
 					</div>
 				)}
