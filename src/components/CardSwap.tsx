@@ -32,7 +32,7 @@ const placeNow = (el: HTMLElement | null, slot: ReturnType<typeof makeSlot>, ske
         force3D: true
     });
 
-export interface CardSwapProps {
+interface CardSwapProps {
     width?: number | string;
     height?: number | string;
     cardDistance?: number;
