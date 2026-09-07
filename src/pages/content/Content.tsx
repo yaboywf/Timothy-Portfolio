@@ -1,12 +1,12 @@
-import { SignedImage } from "@/components/SignedImage";
+import { StorageImage } from "@/components/StorageImage";
 import styles from "./content.module.css"
 import BlurText from "@/components/TextEffect";
 import CardSwap, { Card } from "@/components/CardSwap";
 import TiltedCard from "@/components/TiltedCard";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import { type Projects } from "../admin/Admin";
 import { supabase } from "@/lib/supabase";
-import MDEditor from "@uiw/react-md-editor"
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 export default function Introduction() {
 	const [list, setList] = useState<Projects[]>([])
@@ -66,12 +66,17 @@ export default function Introduction() {
 		<>
 			<div className={styles.introduction}>
 				<div className={styles.image_container}>
-					<SignedImage path="Profile.webp" alt="Profile" className={styles.image} />
+					<StorageImage path="Profile.webp" alt="Profile" className={styles.image} />
 				</div>
 				<div className={styles.container}>
 					<BlurText text="Hello!" className={styles.subtitle} />
 					<BlurText text="I'm Timothy Ho" className={styles.title} />
-					<div data-color-mode="light"><MDEditor.Markdown source={general["Profile Subtitle"]} /></div>
+					<div data-color-mode="light">
+						<RichTextEditor
+							value={general["Profile Subtitle"] ?? ""}
+							readOnly
+						/>
+					</div>
 
 					<div className={styles.media_container}>
 						<i className="fa-brands fa-whatsapp" onClick={() => window.open("https://api.whatsapp.com/send?phone=6588019782")}></i>
@@ -87,9 +92,12 @@ export default function Introduction() {
 
 			<div className={styles.about_me}>
 				<h2 className={styles.title}>About Me</h2>
-				<SignedImage path="Introduction.webp" alt="Introduction" className={styles.image} />
+				<StorageImage path="Introduction.webp" alt="Introduction" className={styles.image} />
 				<article data-color-mode="light">
-					<MDEditor.Markdown source={general["About Me Description"]} />
+					<RichTextEditor
+						value={general["About Me Description"] ?? ""}
+						readOnly
+					/>
 				</article>
 			</div>
 
@@ -106,8 +114,11 @@ export default function Introduction() {
 						<Card className={styles.card}>
 							<h3>{project.Title}</h3>
 							<div data-color-mode="light">
-								<SignedImage path={project.Picture} alt={project.Title} className={styles.image} />
-								<MDEditor.Markdown source={project.Description} />
+								<StorageImage path={project.Picture} alt={project.Title} className={styles.image} />
+								<RichTextEditor
+									value={project.Description}
+									readOnly
+								/>
 							</div>
 						</Card>
 					))}
@@ -124,13 +135,16 @@ export default function Introduction() {
 					{educations.map(education => (
 						<div className={styles.card} key={education.Title}>
 							<div className={styles.left}>
-								<SignedImage path={education.Picture} alt={education.Title} className={styles.image} />
+								<StorageImage path={education.Picture} alt={education.Title} className={styles.image} />
 								<div className={styles.line}></div>
 							</div>
 							<div>
 								<h2>{education.Title}</h2>
 								<div data-color-mode="light">
-									<MDEditor.Markdown source={education.Description} />
+									<RichTextEditor
+										value={education.Description}
+										readOnly
+									/>
 								</div>
 							</div>
 						</div>
@@ -144,7 +158,6 @@ export default function Introduction() {
 				{work.map(experience => <>
 					<TiltedCard
 						imageSrc={experience.Picture}
-						isSignedImage={true}
 						overlayContent={
 							<div className={styles.overlay}>
 								<h1>{experience.Title}</h1>
@@ -154,7 +167,10 @@ export default function Introduction() {
 					/>
 
 					<div data-color-mode="light">
-						<MDEditor.Markdown source={experience.Description} />
+						<RichTextEditor
+							value={experience.Description}
+							readOnly
+						/>
 					</div>
 				</>)}
 			</div>
@@ -167,7 +183,6 @@ export default function Introduction() {
 						<TiltedCard
 							key={hobby.ID}
 							imageSrc={hobby.Picture}
-							isSignedImage={true}
 							overlayContent={
 								<div className={styles.overlay}>
 									<h1>{hobby.Title}</h1>
@@ -176,7 +191,10 @@ export default function Introduction() {
 							captionText={hobby.Title}
 						/>
 						<div data-color-mode="light">
-							<MDEditor.Markdown source={hobby.Description} />
+							<RichTextEditor
+								value={hobby.Description}
+								readOnly
+							/>
 						</div>
 					</div>
 				)}

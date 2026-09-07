@@ -1,4 +1,4 @@
-.tilted-card-figure {
+.tilted_card_figure {
     position: relative;
     width: 100%;
     height: 100%;
@@ -9,7 +9,7 @@
     justify-content: center;
 }
 
-.tilted-card-mobile-alert {
+.tilted_card_mobile_alert {
     position: absolute;
     top: 1rem;
     text-align: center;
@@ -18,16 +18,16 @@
 }
 
 @media (max-width: 640px) {
-    .tilted-card-mobile-alert {
+    .tilted_card_mobile_alert {
         display: block;
     }
 
-    .tilted-card-caption {
+    .tilted_card_caption {
         display: none;
     }
 }
 
-.tilted-card-inner {
+.tilted_card_inner {
     --rotate-x: 0deg;
     --rotate-y: 0deg;
     --scale: 1;
@@ -40,7 +40,7 @@
     will-change: transform;
 }
 
-.tilted-card-img {
+.tilted_card_img {
     position: absolute;
     top: 0;
     left: 0;
@@ -50,7 +50,7 @@
     transform: translateZ(0);
 }
 
-.tilted-card-overlay {
+.tilted_card_overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -59,7 +59,7 @@
     transform: translateZ(30px);
 }
 
-.tilted-card-caption {
+.tilted_card_caption {
     --caption-x: 0px;
     --caption-y: 0px;
     --caption-rotate: 0deg;

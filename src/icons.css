@@ -73,3 +73,87 @@
 .fa-envelope {
     --fa: "\f0e0"
 }
+
+.fa-font {
+    --fa: "\f031"
+}
+
+.fa-italic {
+    --fa: "\f033"
+}
+
+.fa-bold {
+    --fa: "\f032"
+}
+
+.fa-underline {
+    --fa: "\f0cd"
+}
+
+.fa-strikethrough {
+    --fa: "\f0cc"
+}
+
+.fa-link {
+    --fa: "\f0c1"
+}
+
+.fa-link-slash {
+    --fa: "\f127"
+}
+
+.fa-arrow-rotate-left {
+    --fa: "\f0e2";
+}
+
+.fa-arrow-rotate-right {
+    --fa: "\f01e";
+}
+
+.fa-align-left {
+    --fa: "\f036"
+}
+
+.fa-align-right {
+    --fa: "\f038"
+}
+
+.fa-align-center {
+    --fa: "\f037"
+}
+
+.fa-text-size {
+    --fa: "\f894"
+}
+
+.fa-list-ul {
+    --fa: "\f0ca"
+}
+
+.fa-list-ol {
+    --fa: "\f0cb"
+}
+
+.fa-indent {
+    --fa: "\f03c"
+}
+
+.fa-outdent {
+    --fa: "\f03b"
+}
+
+.fa-subscript {
+    --fa: "\f12b"
+}
+
+.fa-superscript {
+    --fa: "\f12c"
+}
+
+.fa-horizontal-line {
+    --fa: "\f86c"
+}
+
+.fa-heading {
+    --fa: "\f1dc"
+}

@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "preact/hooks"
+import type { TargetedEvent } from "preact";
 import { supabase } from "@/lib/supabase"
-import { MarkdownEditor } from "@/components/MarkdownEditor"
-import { SignedImage } from "@/components/SignedImage"
+import { RichTextEditor } from "@/components/RichTextEditor"
+import { StorageImage } from "@/components/StorageImage"
 import styles from "./admin.module.css"
 
 export type Projects = {
@@ -91,8 +92,8 @@ export default function Admin() {
         setLoadingImages(false)
     }
 
-    async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-        const files = e.target.files
+    async function handleUpload(e: TargetedEvent<HTMLInputElement, Event>) {
+        const files = e.currentTarget.files
         if (!files || files.length === 0) return
 
         setUploading(true)
@@ -117,7 +118,7 @@ export default function Admin() {
             setUploadError(errorMessage)
         } finally {
             setUploading(false)
-            e.target.value = ""
+            e.currentTarget.value = ""
         }
     }
 
@@ -305,7 +306,7 @@ export default function Admin() {
                         type="text"
                         placeholder="Item Title"
                         value={item.Title}
-                        onChange={(e) => updateLocalProject(item.ID, { Title: e.target.value })}
+                        onChange={(e) => updateLocalProject(item.ID, { Title: e.currentTarget.value })}
                     />
                 </div>
 
@@ -318,14 +319,14 @@ export default function Admin() {
                                 type="text"
                                 placeholder="Image filename (e.g. image.png)"
                                 value={item.Picture}
-                                onChange={(e) => updateLocalProject(item.ID, { Picture: e.target.value })}
+                                onChange={(e) => updateLocalProject(item.ID, { Picture: e.currentTarget.value })}
                             />
                             <select
                                 className={styles.imageSelectInput}
                                 value={images.some(img => img.name === item.Picture) ? item.Picture : ""}
                                 onChange={(e) => {
-                                    if (e.target.value) {
-                                        updateLocalProject(item.ID, { Picture: e.target.value })
+                                    if (e.currentTarget.value) {
+                                        updateLocalProject(item.ID, { Picture: e.currentTarget.value })
                                     }
                                 }}
                             >
@@ -339,7 +340,7 @@ export default function Admin() {
                         </div>
                         <div className={styles.imagePreviewBox}>
                             {item.Picture ? (
-                                <SignedImage path={item.Picture} alt={item.Title} />
+                                <StorageImage path={item.Picture} alt={item.Title} />
                             ) : (
                                 <span style={{ color: "#888", fontSize: "0.8rem" }}>No image</span>
                             )}
@@ -348,15 +349,14 @@ export default function Admin() {
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Description (Markdown)</label>
-                    <div className={styles.markdownWrapper}>
-                        <MarkdownEditor
-                            value={item.Description}
-                            onChange={(markdown) => {
-                                updateLocalProject(item.ID, { Description: markdown })
-                            }}
-                        />
-                    </div>
+                    <label className={styles.formLabel}>Description</label>
+                    <RichTextEditor
+                        value={item.Description || ""}
+                        onChangeAction={(content) => {
+                            updateLocalProject(item.ID, { Description: content })
+                        }}
+                        placeholder="Write project description..."
+                    />
                 </div>
 
                 <div className={styles.cardFooter}>
@@ -440,7 +440,7 @@ export default function Admin() {
                         {images.map((img) => (
                             <div key={img.name} className={styles.mediaCard}>
                                 <div className={styles.mediaThumbnailWrapper}>
-                                    <SignedImage path={img.name} alt={img.name} className={styles.mediaThumbnail} />
+                                    <StorageImage path={img.name} alt={img.name} className={styles.mediaThumbnail} />
                                 </div>
                                 <div className={styles.mediaName} title={img.name}>
                                     {img.name}
@@ -481,17 +481,16 @@ export default function Admin() {
                             className={styles.projectTitleInput}
                             type="text"
                             value={general["Profile Subtitle"] ?? ""}
-                            onChange={(e) => updateLocalGeneral("Profile Subtitle", e.target.value)}
+                            onChange={(e) => updateLocalGeneral("Profile Subtitle", e.currentTarget.value)}
                         />
                     </div>
                     <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>About Me Description (Markdown)</label>
-                        <div className={styles.markdownWrapper}>
-                            <MarkdownEditor
-                                value={general["About Me Description"] ?? ""}
-                                onChange={(markdown) => updateLocalGeneral("About Me Description", markdown)}
-                            />
-                        </div>
+                        <label className={styles.formLabel}>About Me Description</label>
+                        <RichTextEditor
+                            value={general["About Me Description"] ?? ""}
+                            onChangeAction={(content) => updateLocalGeneral("About Me Description", content)}
+                            placeholder="Write about me..."
+                        />
                     </div>
                     <div className={styles.cardFooter}>
                         <button

@@ -1,26 +1,48 @@
+import type { TargetedSubmitEvent } from "preact";
 import { supabase } from "@/lib/supabase"
-import { useState } from "react"
+import { useEffect, useState } from "preact/hooks"
+import { useLocation } from "preact-iso";
 import styles from "./login.module.css"
-import { useNavigate } from "react-router-dom"
 
 export default function Login() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const navigate = useNavigate()
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { route } = useLocation();
 
-    async function signIn(e: React.SubmitEvent) {
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data }) => {
+            if (data.session) {
+                route("/admin", true);
+            }
+        });
+    }, [route]);
+
+    async function checkBuckets() {
+        const { data, error } = await supabase.storage.listBuckets()
+
+        console.log("Buckets:", data)
+        console.error("Storage error:", error)
+    }   
+
+    checkBuckets()
+
+    async function signIn(e: TargetedSubmitEvent<HTMLFormElement>) {
         e.preventDefault();
+        setIsSubmitting(true);
 
         const { error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password,
         })
 
+        setIsSubmitting(false);
         if (error) {
             alert("Invalid credentials. Please try again.")
-        } else {
-            navigate("/admin")
+            return
         }
+
+        route("/admin", true);
     }
 
     return (
@@ -30,15 +52,15 @@ export default function Login() {
                     type="email"
                     placeholder="Email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.currentTarget.value)}
                 />
                 <input
                     type="password"
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.currentTarget.value)}
                 />
-                <button type="submit">Sign in</button>
+                <button type="submit" disabled={isSubmitting}>Sign in</button>
             </form>
         </div>
     )
