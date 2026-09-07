@@ -7,6 +7,7 @@ import Content from './pages/content/Content';
 import Login from './pages/login/Login';
 import Admin from './pages/admin/Admin';
 import { RequireAuth } from './components/RequireAuth';
+import { Lenis } from 'lenis/react';
 
 const ProtectedAdmin = () => (
     <RequireAuth>
@@ -15,12 +16,15 @@ const ProtectedAdmin = () => (
 );
 
 render(
-	<LocationProvider>
-		<Router>
-			<Route path="/" component={Content} />
-			<Route path="/login" component={Login} />
-			<Route path="/admin" component={ProtectedAdmin} />
-		</Router>
-	</LocationProvider>,
+	<>
+		<Lenis />
+		<LocationProvider>
+			<Router>
+				<Route path="/" component={Content} />
+				<Route path="/login" component={Login} />
+				<Route path="/admin" component={ProtectedAdmin} />
+			</Router>
+		</LocationProvider>
+	</>,
 	document.getElementById('root')!
 )
