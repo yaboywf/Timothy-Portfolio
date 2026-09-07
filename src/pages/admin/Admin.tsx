@@ -86,7 +86,6 @@ export default function Admin() {
         if (error) {
             console.error("Error fetching images:", error)
         } else {
-            console.log(data)
             setImages((data || []).filter(f => f.name && !f.name.startsWith(".")))
         }
         setLoadingImages(false)

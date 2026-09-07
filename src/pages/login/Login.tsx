@@ -18,15 +18,6 @@ export default function Login() {
         });
     }, [route]);
 
-    async function checkBuckets() {
-        const { data, error } = await supabase.storage.listBuckets()
-
-        console.log("Buckets:", data)
-        console.error("Storage error:", error)
-    }   
-
-    checkBuckets()
-
     async function signIn(e: TargetedSubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setIsSubmitting(true);

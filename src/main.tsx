@@ -1,6 +1,5 @@
 import { render } from 'preact'
-import { lazy, Suspense } from "preact/compat"
-import { LocationProvider, Router, Route } from 'preact-iso'
+import { LocationProvider, Router, Route, ErrorBoundary, lazy } from 'preact-iso'
 import Content from './pages/content/Content';
 import { SmoothScroll } from "./components/SmoothScroll"
 import "lenis/dist/lenis.css"
@@ -14,13 +13,13 @@ render(
 	<>
 		<SmoothScroll />
 		<LocationProvider>
-			<Suspense fallback={<p>Loading...</p>}>
+			<ErrorBoundary onError={error => console.error(error)}>
 				<Router>
 					<Route path="/" component={Content} />
 					<Route path="/login" component={Login} />
 					<Route path="/admin" component={ProtectedAdmin} />
 				</Router>
-			</Suspense>
+			</ErrorBoundary>
 		</LocationProvider>
 	</>,
 	document.getElementById('root')!
