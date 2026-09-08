@@ -20,6 +20,18 @@ export default defineConfig({
 				globPatterns: [
 					"**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,woff,woff2,ttf}",
 				],
+				globIgnores: [
+					"**/Admin-*.js",
+					"**/Admin-*.css",
+					"**/Login-*.js",
+					"**/Login-*.css",
+					"**/layout-*.js",
+					"**/supabase-*.js",
+					"**/stats.html",
+					"**/webfonts/solid.ttf",
+					"**/webfonts/regular.ttf",
+					"**/webfonts/brands.ttf",
+				],
 				runtimeCaching: [{
 					urlPattern: ({ url, request }) =>
 						request.method === "GET" &&

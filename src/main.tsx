@@ -1,11 +1,11 @@
 import { render } from 'preact'
 import { LocationProvider, Router, Route, ErrorBoundary, lazy } from 'preact-iso'
-import Content from './pages/content/Content';
 import { SmoothScroll } from "./components/SmoothScroll"
 import "lenis/dist/lenis.css"
 import './style.css'
 import './icons.css'
 
+const Content = lazy(() => import('./pages/content/Content'));
 const Login = lazy(() => import("./pages/login/Login"))
 const ProtectedAdmin = lazy(() => import("./pages/admin/layout"),)
 
