@@ -81,7 +81,8 @@ li p {
         gap: 20px;
         margin-top: 30px;
 
-        i {
+        a {
+            color: inherit;
             font-size: 22px;
             cursor: pointer;
             transition: scale 0.2s ease-in-out, color 0.2s ease-in-out;

@@ -76,10 +76,18 @@ export default function Introduction() {
 					</div>
 
 					<div className={styles.media_container}>
-						<i className="fa-brands fa-whatsapp" aria-label="Open WhatsApp" onClick={() => window.open("https://api.whatsapp.com/send?phone=6588019782")}></i>
-						<i className="fa-brands fa-instagram" aria-label="Open Instagram" onClick={() => window.open("https://www.instagram.com/timx.hx")}></i>
-						<i className="fa-regular fa-envelope" aria-label="Send Email" onClick={() => window.open("mailto:timmy.yyxx@gmail.com")}></i>
-						<i className="fa-brands fa-linkedin" aria-label="Open LinkedIn" onClick={() => window.open("https://www.linkedin.com/in/timothyyhoo")}></i>
+						<a href="https://api.whatsapp.com/send?phone=6588019782" target="_blank" rel="noopener noreferrer">
+							<i className="fa-brands fa-whatsapp" aria-label="Open WhatsApp"></i>
+						</a>
+						<a href="https://www.instagram.com/timx.hx" target="_blank" rel="noopener noreferrer">
+							<i className="fa-brands fa-instagram" aria-label="Open Instagram"></i>
+						</a>
+						<a href="mailto:timmy.yyxx@gmail.com" target="_blank" rel="noopener noreferrer">
+							<i className="fa-regular fa-envelope" aria-label="Send Email"></i>
+						</a>
+						<a href="https://www.linkedin.com/in/timothyyhoo" target="_blank" rel="noopener noreferrer">
+							<i className="fa-brands fa-linkedin" aria-label="Open LinkedIn"></i>
+						</a>
 					</div>
 					<button className={styles.resume_button}>
 						<a href="/Timothy-CV.pdf" download="Timothy-CV.pdf">Download Resume</a>
