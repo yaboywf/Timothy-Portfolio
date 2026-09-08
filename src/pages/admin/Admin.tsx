@@ -104,7 +104,11 @@ export default function Admin() {
                 const sanitizedName = file.name.replace(/\s+/g, "-")
                 const { error } = await supabase.storage
                     .from("portfolio-images")
-                    .upload(sanitizedName, file, { upsert: true })
+                    .upload(sanitizedName, file, {
+                        cacheControl: "31536000",
+                        contentType: file.type,
+                        upsert: true
+                    })
 
                 if (error) {
                     throw error
