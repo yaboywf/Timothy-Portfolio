@@ -63,7 +63,7 @@ export default function Introduction() {
 	}, [list])
 
 	return (
-		<>
+		<main>
 			<div className={styles.introduction}>
 				<div className={styles.image_container}>
 					<StorageImage path="Profile.webp" alt="Profile" className={styles.image} loading="eager" fetchPriority="high" />
@@ -191,6 +191,6 @@ export default function Introduction() {
 			</div>
 
 			<p className={styles.footer}>Project made with ❤️ by <a href="https://dylanyeowf.pages.dev">Dylan</a></p>
-		</>
+		</main>
 	);
 }

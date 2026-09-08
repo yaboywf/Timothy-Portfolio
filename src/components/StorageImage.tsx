@@ -13,6 +13,6 @@ export function StorageImage({ path, src, alt = "", ...props }: StorageImageProp
     }
 
     const url = getStorageImageUrl(imagePath);
-    return <img src={url} alt={alt} loading="lazy" {...props} />;
+    return <img src={url} alt={alt} {...props} />;
 }
 
