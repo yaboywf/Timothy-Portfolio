@@ -1,12 +1,12 @@
-import { SignedImage } from "@/components/SignedImage";
+import { StorageImage } from "@/components/StorageImage";
 import styles from "./content.module.css"
 import BlurText from "@/components/TextEffect";
 import CardSwap, { Card } from "@/components/CardSwap";
 import TiltedCard from "@/components/TiltedCard";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import { type Projects } from "../admin/Admin";
 import { supabase } from "@/lib/supabase";
-import MDEditor from "@uiw/react-md-editor"
+import { RichTextContent } from "@/components/RichTextContent";
 
 export default function Introduction() {
 	const [list, setList] = useState<Projects[]>([])
@@ -63,21 +63,31 @@ export default function Introduction() {
 	}, [list])
 
 	return (
-		<>
+		<main>
 			<div className={styles.introduction}>
 				<div className={styles.image_container}>
-					<SignedImage path="Profile.webp" alt="Profile" className={styles.image} />
+					<StorageImage path="Profile.webp" alt="Profile" className={styles.image} loading="eager" fetchPriority="high" />
 				</div>
 				<div className={styles.container}>
 					<BlurText text="Hello!" className={styles.subtitle} />
 					<BlurText text="I'm Timothy Ho" className={styles.title} />
-					<div data-color-mode="light"><MDEditor.Markdown source={general["Profile Subtitle"]} /></div>
+					<div data-color-mode="light">
+						<RichTextContent html={general["Profile Subtitle"] ?? ""} />
+					</div>
 
 					<div className={styles.media_container}>
-						<i className="fa-brands fa-whatsapp" onClick={() => window.open("https://api.whatsapp.com/send?phone=6588019782")}></i>
-						<i className="fa-brands fa-instagram" onClick={() => window.open("https://www.instagram.com/timx.hx")}></i>
-						<i className="fa-regular fa-envelope" onClick={() => window.open("mailto:timmy.yyxx@gmail.com")}></i>
-						<i className="fa-brands fa-linkedin" onClick={() => window.open("https://www.linkedin.com/in/timothyyhoo")}></i>
+						<a href="https://api.whatsapp.com/send?phone=6588019782" target="_blank" rel="noopener noreferrer">
+							<i className="fa-brands fa-whatsapp" aria-label="Open WhatsApp"></i>
+						</a>
+						<a href="https://www.instagram.com/timx.hx" target="_blank" rel="noopener noreferrer">
+							<i className="fa-brands fa-instagram" aria-label="Open Instagram"></i>
+						</a>
+						<a href="mailto:timmy.yyxx@gmail.com" target="_blank" rel="noopener noreferrer">
+							<i className="fa-regular fa-envelope" aria-label="Send Email"></i>
+						</a>
+						<a href="https://www.linkedin.com/in/timothyyhoo" target="_blank" rel="noopener noreferrer">
+							<i className="fa-brands fa-linkedin" aria-label="Open LinkedIn"></i>
+						</a>
 					</div>
 					<button className={styles.resume_button}>
 						<a href="/Timothy-CV.pdf" download="Timothy-CV.pdf">Download Resume</a>
@@ -87,9 +97,9 @@ export default function Introduction() {
 
 			<div className={styles.about_me}>
 				<h2 className={styles.title}>About Me</h2>
-				<SignedImage path="Introduction.webp" alt="Introduction" className={styles.image} />
+				<StorageImage path="Introduction.webp" alt="Introduction" className={styles.image} loading="lazy" />
 				<article data-color-mode="light">
-					<MDEditor.Markdown source={general["About Me Description"]} />
+					<RichTextContent html={general["About Me Description"] ?? ""} />
 				</article>
 			</div>
 
@@ -106,8 +116,8 @@ export default function Introduction() {
 						<Card className={styles.card}>
 							<h3>{project.Title}</h3>
 							<div data-color-mode="light">
-								<SignedImage path={project.Picture} alt={project.Title} className={styles.image} />
-								<MDEditor.Markdown source={project.Description} />
+								<StorageImage path={project.Picture} alt={project.Title} className={styles.image} loading="lazy" />
+								<RichTextContent html={project.Description} />
 							</div>
 						</Card>
 					))}
@@ -124,13 +134,13 @@ export default function Introduction() {
 					{educations.map(education => (
 						<div className={styles.card} key={education.Title}>
 							<div className={styles.left}>
-								<SignedImage path={education.Picture} alt={education.Title} className={styles.image} />
+								<StorageImage path={education.Picture} alt={education.Title} className={styles.image} loading="lazy" />
 								<div className={styles.line}></div>
 							</div>
 							<div>
 								<h2>{education.Title}</h2>
 								<div data-color-mode="light">
-									<MDEditor.Markdown source={education.Description} />
+									<RichTextContent html={education.Description} />
 								</div>
 							</div>
 						</div>
@@ -144,7 +154,6 @@ export default function Introduction() {
 				{work.map(experience => <>
 					<TiltedCard
 						imageSrc={experience.Picture}
-						isSignedImage={true}
 						overlayContent={
 							<div className={styles.overlay}>
 								<h1>{experience.Title}</h1>
@@ -154,7 +163,7 @@ export default function Introduction() {
 					/>
 
 					<div data-color-mode="light">
-						<MDEditor.Markdown source={experience.Description} />
+						<RichTextContent html={experience.Description} />
 					</div>
 				</>)}
 			</div>
@@ -167,7 +176,6 @@ export default function Introduction() {
 						<TiltedCard
 							key={hobby.ID}
 							imageSrc={hobby.Picture}
-							isSignedImage={true}
 							overlayContent={
 								<div className={styles.overlay}>
 									<h1>{hobby.Title}</h1>
@@ -176,13 +184,13 @@ export default function Introduction() {
 							captionText={hobby.Title}
 						/>
 						<div data-color-mode="light">
-							<MDEditor.Markdown source={hobby.Description} />
+							<RichTextContent html={hobby.Description} />
 						</div>
 					</div>
 				)}
 			</div>
 
 			<p className={styles.footer}>Project made with ❤️ by <a href="https://dylanyeowf.pages.dev">Dylan</a></p>
-		</>
+		</main>
 	);
 }

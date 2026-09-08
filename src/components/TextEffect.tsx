@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import styles from "./textEffect.module.css";
 
 type BlurTextProps = {

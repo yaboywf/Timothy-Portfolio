@@ -1,0 +1,159 @@
+.container {
+    padding: 5px 8px;
+    border: 1px solid grey;
+    border-radius: 8px;
+    max-width: 180px;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+
+    i {
+        color: grey;
+        font-size: 13px;
+    }
+}
+
+.color_picker {
+    width: 18px;
+    height: 18px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    appearance: none;
+    background: transparent;
+    position: relative;
+    translate: 0 25%;
+
+    &::-webkit-color-swatch-wrapper {
+        padding: 0;
+    }
+
+    &::-webkit-color-swatch {
+        border: 0;
+        border-radius: 50%;
+    }
+
+    &::-moz-color-swatch {
+        border: 0;
+        border-radius: 50%;
+    }
+}
+
+.editor {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.editor_content {
+    padding: 10px;
+    width: 100%;
+
+    &[data-readonly="false"] {
+        border-radius: 10px;
+        background: #f3f3f3;
+    }
+
+    :global(.ProseMirror) {
+        min-height: 150px;
+        padding: 5px;
+        outline: none;
+        font-size: 14px;
+
+        :global(p.is-editor-empty:first-child::before) {
+            float: left;
+            height: 0;
+            font-size: 14px;
+            color: #8a919c;
+            content: attr(data-placeholder);
+            pointer-events: none;
+        }
+    }
+
+    :global(.tiptap ul),
+    :global(.tiptap ol) {
+        padding-left: 1.5rem;
+        margin: 0.5rem 0;
+    }
+
+    :global(.tiptap ul) {
+        list-style-type: disc;
+        padding-left: 1.5rem;
+    }
+
+    :global(.tiptap ul ul) {
+        list-style-type: circle;
+    }
+
+    :global(.tiptap ul ul ul) {
+        list-style-type: square;
+    }
+
+    :global(.tiptap ol) {
+        list-style-type: decimal;
+        padding-left: 1.5rem;
+    }
+
+    :global(.tiptap ol ol) {
+        list-style-type: lower-alpha;
+    }
+
+    :global(.tiptap ol ol ol) {
+        list-style-type: lower-roman;
+    }
+
+    :global(.tiptap blockquote) {
+        margin: 5px 0;
+        padding: 5px 10px;
+        border-left: 3px solid #94a3b8;
+        background: #f8fafc;
+        color: #475569;
+    }
+}
+
+.toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    .divider {
+        height: 30px;
+        width: 1px;
+        border-radius: 5px;
+        background-color: lightgrey;
+    }
+
+    button {
+        padding: 5px;
+        width: auto;
+        border-radius: 5px;
+        background: none;
+        border: none;
+
+        &:hover {
+            background-color: #ededed;
+        }
+
+        &:global(.active) {
+            background-color: #e2e8f0;
+            color: #0f172a;
+        }
+    }
+
+    select {
+        cursor: pointer;
+    }
+
+    select {
+        border: none;
+        outline: none;
+        background: transparent;
+        color: black;
+        border-radius: 0;
+
+        &:disabled {
+            cursor: not-allowed;
+        }
+    }
+}

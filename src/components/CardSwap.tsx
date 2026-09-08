@@ -1,11 +1,21 @@
-import React, { Children, cloneElement, forwardRef, isValidElement, useEffect, useMemo, useRef } from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import { cloneElement, createRef, isValidElement, toChildArray } from "preact";
+import type { ComponentChildren, HTMLAttributes, JSX, Ref, TargetedMouseEvent, VNode } from "preact";
+import { useEffect, useMemo, useRef } from "preact/hooks";
 import gsap from 'gsap';
 import styles from "./cardswap.module.css";
+import { forwardRef } from "preact/compat";
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
     customClass?: string;
 }
+
+type CardElementProps = {
+    style?: JSX.CSSProperties;
+    onClick?: (
+        event: TargetedMouseEvent<HTMLElement>,
+    ) => void;
+    ref?: Ref<HTMLElement>;
+};
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(({ customClass, ...rest }, ref) => (
     <div ref={ref} {...rest} className={`${styles.card} ${customClass ?? ''} ${rest.className ?? ''}`.trim()} />
@@ -42,7 +52,7 @@ interface CardSwapProps {
     onCardClick?: (index: number) => void;
     skewAmount?: number;
     easing?: 'elastic' | 'smooth';
-    children?: ReactNode;
+    children?: ComponentChildren;
 }
 
 const CardSwap = ({
@@ -75,10 +85,9 @@ const CardSwap = ({
                 returnDelay: 0.2
             };
 
-    const childArr = useMemo(() => Children.toArray(children), [children]);
+    const childArr = useMemo(() => toChildArray(children), [children]);
     const refs = useMemo(
-        () => childArr.map(() => React.createRef<HTMLElement>()),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        () => childArr.map(() => createRef<HTMLElement>()),
         [childArr.length]
     );
 
@@ -222,12 +231,12 @@ const CardSwap = ({
 
     const rendered = childArr.map((child, i) => {
         if (isValidElement(child)) {
-            const childElement = child as React.ReactElement<{ style?: React.CSSProperties; onClick?: (e: React.MouseEvent) => void; ref?: React.Ref<HTMLElement> }>;
+            const childElement = child as VNode<CardElementProps>
             return cloneElement(childElement, {
                 key: i,
                 ref: refs[i],
                 style: { width, height, ...(childElement.props.style ?? {}) },
-                onClick: (e: React.MouseEvent) => {
+                onClick: (e: TargetedMouseEvent<HTMLElement>) => {
                     childElement.props.onClick?.(e);
                     onCardClick?.(i);
                 }

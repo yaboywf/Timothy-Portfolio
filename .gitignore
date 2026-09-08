@@ -25,4 +25,7 @@ dist-ssr
 
 .env
 stats.html
-timothy-portfolio.zip
+/public/webfonts/brands.ttf
+/public/webfonts/regular.ttf
+/public/webfonts/solid.ttf
+/scripts

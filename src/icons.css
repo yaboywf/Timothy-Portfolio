@@ -1,20 +1,29 @@
 @font-face {
     font-family: "Font Awesome 7 Pro";
     font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url(/webfonts/solid-subset.ttf) format("truetype")
+}
+
+@font-face {
+    font-family: "Font Awesome 7 Pro";
+    font-style: normal;
     font-weight: 400;
-    font-display: block;
-    src: url("/webfonts/regular-icons.ttf") format("truetype");
+    font-display: swap;
+    src: url("/webfonts/regular-subset.ttf") format("truetype");
 }
 
 @font-face {
     font-family: "Font Awesome 7 Brands";
     font-style: normal;
     font-weight: 400;
-    font-display: block;
-    src: url("/webfonts/brand-icons.woff2") format("woff2")
+    font-display: swap;
+    src: url("/webfonts/brands-subset.ttf") format("truetype");
 }
 
 .fa-brands,
+.fa-solid,
 .fa-regular {
     --_fa-family: var(--fa-family, var(--fa-style-family, "Font Awesome 7 Pro"));
     -webkit-font-smoothing: antialiased;
@@ -32,7 +41,7 @@
     width: var(--fa-width, 1.25em)
 }
 
-:is(.fa-brands, .fa-regular):before {
+:is(.fa-brands, .fa-regular, .fa-solid):before {
     content: var(--fa);
     content: var(--fa)/""
 }
@@ -42,12 +51,17 @@
     --fa-family-brands: "Font Awesome 7 Brands";
     --fa-family-classic: "Font Awesome 7 Pro";
     --fa-font-brands: normal 400 1em/1 var(--fa-family-brands);
+    --fa-font-solid: normal 900 1em/1 var(--fa-family-classic);
     --fa-font-regular: normal 400 1em/1 var(--fa-family-classic);
 }
 
 .fa-brands {
     --fa-family: var(--fa-family-brands);
     --fa-style: 400
+}
+
+.fa-solid {
+    --fa-style: 900
 }
 
 .fa-regular {
@@ -72,4 +86,92 @@
 
 .fa-envelope {
     --fa: "\f0e0"
+}
+
+.fa-font {
+    --fa: "\f031"
+}
+
+.fa-italic {
+    --fa: "\f033"
+}
+
+.fa-bold {
+    --fa: "\f032"
+}
+
+.fa-underline {
+    --fa: "\f0cd"
+}
+
+.fa-strikethrough {
+    --fa: "\f0cc"
+}
+
+.fa-link {
+    --fa: "\f0c1"
+}
+
+.fa-link-slash {
+    --fa: "\f127"
+}
+
+.fa-arrow-rotate-left {
+    --fa: "\f0e2";
+}
+
+.fa-arrow-rotate-right {
+    --fa: "\f01e";
+}
+
+.fa-align-left {
+    --fa: "\f036"
+}
+
+.fa-align-right {
+    --fa: "\f038"
+}
+
+.fa-align-center {
+    --fa: "\f037"
+}
+
+.fa-text-size {
+    --fa: "\f894"
+}
+
+.fa-list-ul {
+    --fa: "\f0ca"
+}
+
+.fa-list-ol {
+    --fa: "\f0cb"
+}
+
+.fa-indent {
+    --fa: "\f03c"
+}
+
+.fa-outdent {
+    --fa: "\f03b"
+}
+
+.fa-subscript {
+    --fa: "\f12b"
+}
+
+.fa-superscript {
+    --fa: "\f12c"
+}
+
+.fa-horizontal-line {
+    --fa: "\f86c"
+}
+
+.fa-heading {
+    --fa: "\f1dc"
+}
+
+.fa-quote-left {
+    --fa: "\0022"
 }

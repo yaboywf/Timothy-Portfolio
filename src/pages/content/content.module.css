@@ -28,6 +28,15 @@
     }
 }
 
+
+li, ol {
+    margin: 8px 0 8px 20px;
+
+    li {
+        margin-bottom: 5px;
+    }
+}
+
 .image_container {
     position: relative;
     width: 400px;
@@ -76,7 +85,8 @@
         gap: 20px;
         margin-top: 30px;
 
-        i {
+        a {
+            color: inherit;
             font-size: 22px;
             cursor: pointer;
             transition: scale 0.2s ease-in-out, color 0.2s ease-in-out;
@@ -186,6 +196,7 @@
         h3 {
             height: max-content;
             grid-column: 1 / -1;
+            text-align: left;
             font-size: 22px;
             margin-bottom: 10px;
         }

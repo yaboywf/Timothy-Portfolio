@@ -1,6 +1,7 @@
-import { useRef, type ReactNode } from "react";
-import { SignedImage } from "@/components/SignedImage";
-import "./tiltedcard.css";
+import type { ComponentChildren, TargetedMouseEvent } from "preact";
+import { useRef } from "preact/hooks";
+import { getStorageImageUrl } from "@/lib/image";
+import styles from "./tiltedcard.module.css";
 
 export interface TiltedCardProps {
 	imageSrc: string;
@@ -14,9 +15,8 @@ export interface TiltedCardProps {
 	rotateAmplitude?: number;
 	showMobileWarning?: boolean;
 	showTooltip?: boolean;
-	overlayContent?: ReactNode;
+	overlayContent?: ComponentChildren;
 	displayOverlayContent?: boolean;
-	isSignedImage?: boolean;
 }
 
 export default function TiltedCard({
@@ -33,14 +33,13 @@ export default function TiltedCard({
 	showTooltip = true,
 	overlayContent = null,
 	displayOverlayContent = true,
-	isSignedImage = false,
 }: TiltedCardProps) {
 	const figureRef = useRef<HTMLElement>(null);
 	const innerRef = useRef<HTMLDivElement>(null);
 	const captionRef = useRef<HTMLElement>(null);
-	const lastY = useRef(0);
+	const lastYRef = useRef(0);
 
-	function handleMouseMove(event: React.MouseEvent<HTMLElement>) {
+	function handleMouseMove(event: TargetedMouseEvent<HTMLElement>) {
 		const figure = figureRef.current;
 		const inner = innerRef.current;
 		const caption = captionRef.current;
@@ -58,14 +57,14 @@ export default function TiltedCard({
 		inner.style.setProperty("--rotate-y", `${rotateY}deg`);
 
 		if (caption) {
-			const velocityY = offsetY - lastY.current;
+			const velocityY = offsetY - lastYRef.current;
 
 			caption.style.setProperty("--caption-x", `${event.clientX - rect.left}px`);
 			caption.style.setProperty("--caption-y", `${event.clientY - rect.top}px`);
 			caption.style.setProperty("--caption-rotate", `${-velocityY * 0.6}deg`);
 		}
 
-		lastY.current = offsetY;
+		lastYRef.current = offsetY;
 	}
 
 	function handleMouseEnter() {
@@ -88,46 +87,38 @@ export default function TiltedCard({
 	return (
 		<figure
 			ref={figureRef}
-			className="tilted-card-figure"
+			className={styles.tilted_card_figure}
 			style={{ height: containerHeight, width: containerWidth }}
 			onMouseMove={handleMouseMove}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 		>
 			{showMobileWarning && (
-				<div className="tilted-card-mobile-alert">
+				<div className={styles.tilted_card_mobile_alert}>
 					This effect is not optimized for mobile. Check on desktop.
 				</div>
 			)}
 
 			<div
 				ref={innerRef}
-				className="tilted-card-inner"
+				className={styles.tilted_card_inner}
 				style={{ width: imageWidth, height: imageHeight }}
 			>
-				{isSignedImage ? (
-					<SignedImage
-						path={imageSrc}
-						alt={altText}
-						className="tilted-card-img"
-						style={{ width: imageWidth, height: imageHeight }}
-					/>
-				) : (
-					<img
-						src={imageSrc}
-						alt={altText}
-						className="tilted-card-img"
-						style={{ width: imageWidth, height: imageHeight }}
-					/>
-				)}
+				<img
+					src={getStorageImageUrl(imageSrc)}
+					alt={altText}
+					className={styles.tilted_card_img}
+					style={{ width: imageWidth, height: imageHeight }}
+					loading="lazy"
+				/>
 
 				{displayOverlayContent && overlayContent && (
-					<div className="tilted-card-overlay">{overlayContent}</div>
+					<div className={styles.tilted_card_overlay}>{overlayContent}</div>
 				)}
 			</div>
 
 			{showTooltip && (
-				<figcaption ref={captionRef} className="tilted-card-caption">
+				<figcaption ref={captionRef} className={styles.tilted_card_caption}>
 					{captionText}
 				</figcaption>
 			)}
