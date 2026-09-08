@@ -29,8 +29,12 @@
 }
 
 
-li p {
-    line-height: 1.5;
+li, ol {
+    margin: 8px 0 8px 20px;
+
+    li {
+        margin-bottom: 5px;
+    }
 }
 
 .image_container {
@@ -192,6 +196,7 @@ li p {
         h3 {
             height: max-content;
             grid-column: 1 / -1;
+            text-align: left;
             font-size: 22px;
             margin-bottom: 10px;
         }
