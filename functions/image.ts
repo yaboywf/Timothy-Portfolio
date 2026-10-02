@@ -9,7 +9,18 @@ const app = new Hono();
 app.use(
     "*",
     cors({
-        origin: "http://localhost:5173",
+        origin: (origin) => {
+            const allowedOrigins = [
+                "http://localhost:5173",
+                "http://localhost:41073",
+                "https://timothyho.pages.dev",
+                "https://staging.timothyho.pages.dev",
+            ];
+
+            return allowedOrigins.includes(origin)
+                ? origin
+                : "";
+        },
         allowMethods: ["GET", "POST", "DELETE", "OPTIONS"],
         allowHeaders: ["Content-Type", "Authorization"],
     }),

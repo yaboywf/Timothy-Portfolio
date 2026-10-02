@@ -17,16 +17,12 @@ render(
 
         <LocationProvider>
             <ErrorBoundary onError={(error) => console.error(error)}>
-                <NeonAuthUIProvider
-                    authClient={auth}
-                    defaultTheme="light"
-                    social={{ providers: ["google"] }}
-                    redirectTo="/admin"
-                >
+                <NeonAuthUIProvider authClient={auth} defaultTheme="light" social={{ providers: ["google"] }} redirectTo="/admin">
                     <Router>
                         <Route path="/" component={Content} />
                         <Route path="/login" component={Login} />
                         <Route path="/admin" component={ProtectedAdmin} />
+                        <Route default component={Content} />
                     </Router>
                 </NeonAuthUIProvider>
             </ErrorBoundary>
