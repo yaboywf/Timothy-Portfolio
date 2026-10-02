@@ -9,7 +9,12 @@ const sql = neon(process.env.DATABASE_URL!);
 app.use(
     "*",
     cors({
-        origin: "*",
+        origin: (origin) => {
+            const allowedOrigins = ["http://localhost:5173", "http://localhost:4173", "https://timothyho.pages.dev", "https://staging.timothyho.pages.dev"];
+
+            return allowedOrigins.includes(origin) ? origin : "";
+        },
+
         allowMethods: ["GET", "OPTIONS"],
     }),
 );
