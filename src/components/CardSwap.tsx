@@ -1,5 +1,5 @@
 import { cloneElement, createRef, isValidElement, toChildArray } from "preact";
-import type { ComponentChildren, HTMLAttributes, JSX, Ref, TargetedMouseEvent, VNode } from "preact";
+import type { ComponentChildren, CSSProperties, HTMLAttributes, Ref, TargetedMouseEvent, VNode } from "preact";
 import { useEffect, useMemo, useRef } from "preact/hooks";
 import gsap from 'gsap';
 import styles from "./cardswap.module.css";
@@ -10,7 +10,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 type CardElementProps = {
-    style?: JSX.CSSProperties;
+    style?: CSSProperties;
     onClick?: (
         event: TargetedMouseEvent<HTMLElement>,
     ) => void;
