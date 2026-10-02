@@ -1,0 +1,36 @@
+declare const styles: {
+  readonly "fa": string;
+  readonly "fa-align-center": string;
+  readonly "fa-align-left": string;
+  readonly "fa-align-right": string;
+  readonly "fa-arrow-rotate-left": string;
+  readonly "fa-arrow-rotate-right": string;
+  readonly "fa-bold": string;
+  readonly "fa-brands": string;
+  readonly "fa-envelope": string;
+  readonly "fa-font": string;
+  readonly "fa-heading": string;
+  readonly "fa-indent": string;
+  readonly "fa-instagram": string;
+  readonly "fa-italic": string;
+  readonly "fa-link": string;
+  readonly "fa-link-slash": string;
+  readonly "fa-linkedin": string;
+  readonly "fa-list-ol": string;
+  readonly "fa-list-ul": string;
+  readonly "fa-outdent": string;
+  readonly "fa-quote-left": string;
+  readonly "fa-regular": string;
+  readonly "fa-solid": string;
+  readonly "fa-strikethrough": string;
+  readonly "fa-subscript": string;
+  readonly "fa-superscript": string;
+  readonly "fa-text-size": string;
+  readonly "fa-underline": string;
+  readonly "fa-whatsapp": string;
+  readonly "fab": string;
+  readonly "far": string;
+  readonly "fas": string;
+};
+export = styles;
+

@@ -1,184 +1,203 @@
-import { useEffect, useMemo, useState } from "preact/hooks"
+import { useEffect, useMemo, useState } from "preact/hooks";
 import type { TargetedEvent } from "preact";
-import { supabase } from "@/lib/supabase"
-import { RichTextEditor } from "@/components/RichTextEditor"
-import { StorageImage } from "@/components/StorageImage"
-import styles from "./admin.module.css"
+import { neonInsert, neonSelect, neonDelete, neonUpdate, getAuthHeaders } from "@/lib/neon";
+import { RichTextEditor } from "@/components/RichTextEditor";
+import { StorageImage } from "@/components/StorageImage";
+import styles from "./admin.module.css";
+import { auth } from "@/lib/neon";
 
 export type Projects = {
-    ID: string
-    Picture: string
-    Description: string
-    Title: string
-    Type: "Project" | "Work" | "Hobby" | "Education"
-    Created: string
-}
+    ID: string;
+    Picture: string;
+    Description: string;
+    Title: string;
+    Type: "Project" | "Work" | "Hobby" | "Education";
+    Created: string;
+};
 
 type StorageFile = {
-    name: string
-    id?: string | null
-    created_at?: string | null
-    metadata?: Record<string, unknown> | null
-}
+    name: string;
+    id?: string | null;
+    created_at?: string | null;
+    metadata?: Record<string, unknown> | null;
+};
+
+const IMAGE_URL = import.meta.env.VITE_NEON_STORAGE_URL;
 
 export default function Admin() {
-    const [list, setList] = useState<Projects[]>([])
-    const [savingId, setSavingId] = useState<string | null>(null)
-    const [deletingId, setDeletingId] = useState<string | null>(null)
-    const [creatingType, setCreatingType] = useState<string | null>(null)
-    const [general, setGeneral] = useState<Record<string, string>>({})
-    const [savingGeneralLabel, setSavingGeneralLabel] = useState<string | null>(null)
+    const [list, setList] = useState<Projects[]>([]);
+    const [savingId, setSavingId] = useState<string | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [creatingType, setCreatingType] = useState<string | null>(null);
+    const [general, setGeneral] = useState<Record<string, string>>({});
+    const [savingGeneralLabel, setSavingGeneralLabel] = useState<string | null>(null);
 
     // Storage / Media state
-    const [images, setImages] = useState<StorageFile[]>([])
-    const [loadingImages, setLoadingImages] = useState(false)
-    const [uploading, setUploading] = useState(false)
-    const [uploadError, setUploadError] = useState<string | null>(null)
-    const [deletingImageName, setDeletingImageName] = useState<string | null>(null)
-    const [copiedPath, setCopiedPath] = useState<string | null>(null)
+    const [images, setImages] = useState<StorageFile[]>([]);
+    const [loadingImages, setLoadingImages] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
+    const [deletingImageName, setDeletingImageName] = useState<string | null>(null);
+    const [copiedPath, setCopiedPath] = useState<string | null>(null);
 
     useEffect(() => {
-        getProjects()
-        getGeneral()
-        fetchImages()
-    }, [])
+        getProjects();
+        getGeneral();
+        fetchImages();
+    }, []);
 
     async function getProjects(): Promise<void> {
-        const { data, error } = await supabase
-            .from("Projects")
-            .select("*")
-            .order("Created", { ascending: false })
+        try {
+            const data = await neonSelect<Projects>("Projects");
 
-        if (error) {
-            console.error("Error fetching projects:", error)
-        } else {
-            setList(data || [])
+            data.sort((a, b) => new Date(b.Created).getTime() - new Date(a.Created).getTime());
+
+            setList(data);
+        } catch (error) {
+            console.error("Error fetching projects:", error);
         }
     }
 
     async function getGeneral(): Promise<void> {
-        const { data, error } = await supabase
-            .from("General")
-            .select("Label, Text")
+        try {
+            const data = await neonSelect<{
+                Label: string;
+                Text: string;
+            }>("General");
 
-        if (error) {
-            console.error("Error fetching general settings:", error)
-            return
+            setGeneral(Object.fromEntries(data.map((item) => [item.Label, item.Text])));
+        } catch (error) {
+            console.error("Error fetching general settings:", error);
         }
-
-        setGeneral(
-            Object.fromEntries(
-                (data ?? []).map((item) => [item.Label, item.Text])
-            )
-        )
     }
 
     async function fetchImages() {
-        setLoadingImages(true)
-        const { data, error } = await supabase.storage
-            .from("portfolio-images")
-            .list("", {
-                limit: 100,
-                offset: 0,
-                sortBy: { column: "name", order: "asc" }
-            })
+        setLoadingImages(true);
 
-        if (error) {
-            console.error("Error fetching images:", error)
-        } else {
-            setImages((data || []).filter(f => f.name && !f.name.startsWith(".")))
+        try {
+            const response = await fetch(`${IMAGE_URL}/list`, {
+                headers: await getAuthHeaders(),
+            });
+
+            if (!response.ok) {
+                throw new Error(await response.text());
+            }
+
+            const data: StorageFile[] = await response.json();
+
+            setImages(data.filter((file) => file.name && !file.name.startsWith(".")));
+        } catch (error) {
+            console.error("Error fetching images:", error);
+        } finally {
+            setLoadingImages(false);
         }
-        setLoadingImages(false)
     }
 
     async function handleUpload(e: TargetedEvent<HTMLInputElement, Event>) {
-        const files = e.currentTarget.files
-        if (!files || files.length === 0) return
+        const input = e.currentTarget;
+        const files = input.files;
 
-        setUploading(true)
-        setUploadError(null)
+        if (!files || files.length === 0) {
+            return;
+        }
+
+        setUploading(true);
+        setUploadError(null);
 
         try {
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i]
-                const sanitizedName = file.name.replace(/\s+/g, "-")
-                const { error } = await supabase.storage
-                    .from("portfolio-images")
-                    .upload(sanitizedName, file, {
-                        cacheControl: "31536000",
-                        contentType: file.type,
-                        upsert: true
-                    })
+            const headers = await getAuthHeaders();
 
-                if (error) {
-                    throw error
+            for (const file of files) {
+                const sanitizedName = file.name.replace(/\s+/g, "-");
+
+                const renamedFile = new File([file], sanitizedName, {
+                    type: file.type,
+                });
+
+                const formData = new FormData();
+
+                formData.append("file", renamedFile);
+
+                const response = await fetch(`${IMAGE_URL}/upload`, {
+                    method: "POST",
+                    headers,
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error(await response.text());
                 }
             }
-            await fetchImages()
-        } catch (err: unknown) {
-            const errorMessage = err instanceof Error ? err.message : String(err)
-            console.error("Upload error:", err)
-            setUploadError(errorMessage)
+
+            await fetchImages();
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+
+            console.error("Upload error:", error);
+
+            setUploadError(message);
         } finally {
-            setUploading(false)
-            e.currentTarget.value = ""
+            setUploading(false);
+            input.value = "";
         }
     }
 
     async function handleDeleteImage(fileName: string) {
         if (!window.confirm(`Are you sure you want to delete "${fileName}" from storage?`)) {
-            return
+            return;
         }
 
-        setDeletingImageName(fileName)
-        const { error } = await supabase.storage
-            .from("portfolio-images")
-            .remove([fileName])
+        setDeletingImageName(fileName);
 
-        setDeletingImageName(null)
+        try {
+            const response = await fetch(`${IMAGE_URL}/?key=${encodeURIComponent(fileName)}`, {
+                method: "DELETE",
+                headers: await getAuthHeaders(),
+            });
 
-        if (error) {
-            console.error("Delete image error:", error)
-            alert(`Failed to delete image: ${error.message}`)
-        } else {
-            await fetchImages()
+            if (!response.ok) {
+                throw new Error(await response.text());
+            }
+
+            await fetchImages();
+        } catch (error) {
+            console.error("Delete image error:", error);
+
+            alert(`Failed to delete image: ${error instanceof Error ? error.message : String(error)}`);
+        } finally {
+            setDeletingImageName(null);
         }
     }
 
     function copyToClipboard(text: string) {
-        navigator.clipboard.writeText(text)
-        setCopiedPath(text)
-        setTimeout(() => setCopiedPath(null), 2000)
+        navigator.clipboard.writeText(text);
+        setCopiedPath(text);
+        setTimeout(() => setCopiedPath(null), 2000);
     }
 
     const projects = useMemo(() => {
-        return list.filter(item => item.Type === "Project")
-    }, [list])
+        return list.filter((item) => item.Type === "Project");
+    }, [list]);
 
     const works = useMemo(() => {
-        return list.filter(item => item.Type === "Work")
-    }, [list])
+        return list.filter((item) => item.Type === "Work");
+    }, [list]);
 
     const hobbies = useMemo(() => {
-        return list.filter(item => item.Type === "Hobby")
-    }, [list])
+        return list.filter((item) => item.Type === "Hobby");
+    }, [list]);
 
     const educations = useMemo(() => {
-        return list
-            .filter(item => item.Type === "Education")
-            .sort((a, b) => new Date(b.Created).getTime() - new Date(a.Created).getTime())
-    }, [list])
+        return list.filter((item) => item.Type === "Education").sort((a, b) => new Date(b.Created).getTime() - new Date(a.Created).getTime());
+    }, [list]);
 
     function updateLocalProject(id: string, updates: Partial<Projects>) {
-        setList((current) =>
-            current.map((project) =>
-                project.ID === id ? { ...project, ...updates } : project
-            )
-        )
+        setList((current) => current.map((project) => (project.ID === id ? { ...project, ...updates } : project)));
     }
 
     async function createItem(type: "Project" | "Work" | "Hobby" | "Education") {
-        setCreatingType(type)
+        setCreatingType(type);
+
         const newItem: Projects = {
             ID: crypto.randomUUID(),
             Title: `New ${type}`,
@@ -186,105 +205,95 @@ export default function Admin() {
             Description: "",
             Type: type,
             Created: new Date().toISOString(),
+        };
+
+        try {
+            await neonInsert<Projects>("Projects", newItem);
+
+            setList((current) => [newItem, ...current]);
+        } catch (error) {
+            console.error("Error creating item:", error);
+
+            alert(`Failed to create ${type}`);
+        } finally {
+            setCreatingType(null);
         }
-
-        const { error } = await supabase
-            .from("Projects")
-            .insert(newItem)
-
-        setCreatingType(null)
-
-        if (error) {
-            console.error("Error creating item:", error)
-            alert(`Failed to create ${type}: ${error.message}`)
-            return
-        }
-
-        setList((current) => [newItem, ...current])
     }
 
     async function deleteItem(id: string, title: string) {
         if (!window.confirm(`Are you sure you want to delete "${title || "Untitled"}"?`)) {
-            return
+            return;
         }
 
-        setDeletingId(id)
-        const { error } = await supabase
-            .from("Projects")
-            .delete()
-            .eq("ID", id)
+        setDeletingId(id);
 
-        setDeletingId(null)
+        try {
+            await neonDelete("Projects", `ID=eq.${encodeURIComponent(id)}`);
 
-        if (error) {
-            console.error("Error deleting item:", error)
-            alert(`Failed to delete item: ${error.message}`)
-            return
+            setList((current) => current.filter((item) => item.ID !== id));
+        } catch (error) {
+            console.error("Error deleting item:", error);
+
+            alert("Failed to delete item");
+        } finally {
+            setDeletingId(null);
         }
-
-        setList((current) => current.filter((item) => item.ID !== id))
     }
 
-    async function saveProject(
-        id: string,
-        updates: Pick<Projects, "Title" | "Description" | "Picture">
-    ) {
-        setSavingId(id)
+    async function saveProject(id: string, updates: Pick<Projects, "Title" | "Description" | "Picture">) {
+        setSavingId(id);
 
-        const { error } = await supabase
-            .from("Projects")
-            .update(updates)
-            .eq("ID", id)
+        try {
+            await neonUpdate<Projects>("Projects", `ID=eq.${encodeURIComponent(id)}`, updates);
 
-        setSavingId(null)
+            updateLocalProject(id, updates);
+        } catch (error) {
+            console.error("Error saving project:", error);
 
-        if (error) {
-            console.error("Error saving project:", error)
-            alert(`Failed to save: ${error.message}`)
-            return
+            alert("Failed to save");
+        } finally {
+            setSavingId(null);
         }
-
-        updateLocalProject(id, updates)
     }
 
     async function saveGeneral(label: string, markdown: string) {
-        setSavingGeneralLabel(label)
+        setSavingGeneralLabel(label);
 
-        const { data, error } = await supabase
-            .from("General")
-            .update({ Text: markdown })
-            .eq("Label", label)
-            .select("Label, Text")
+        try {
+            const data = await neonUpdate<{
+                Label: string;
+                Text: string;
+            }>("General", `Label=eq.${encodeURIComponent(label)}`, {
+                Text: markdown,
+            });
 
-        setSavingGeneralLabel(null)
+            if (!data.length) {
+                console.error(`No row updated for: ${label}`);
+                return;
+            }
 
-        if (error) {
-            console.error(error)
-            alert(`Failed to save ${label}: ${error.message}`)
-            return
+            setGeneral((current) => ({
+                ...current,
+                [label]: markdown,
+            }));
+        } catch (error) {
+            console.error(error);
+            alert(`Failed to save ${label}`);
+        } finally {
+            setSavingGeneralLabel(null);
         }
-
-        if (!data?.length) {
-            console.error(`No row updated for: ${label}`)
-            return
-        }
-
-        setGeneral((current) => ({
-            ...current,
-            [label]: markdown,
-        }))
     }
 
     function updateLocalGeneral(label: string, text: string) {
         setGeneral((current) => ({
             ...current,
             [label]: text,
-        }))
+        }));
     }
 
     async function handleLogout() {
-        await supabase.auth.signOut()
-        window.location.href = "/login"
+        await auth.signOut();
+        window.location.href = "/login";
     }
 
     // Render an item editor card (Project, Work, Hobby, Education)
@@ -317,19 +326,12 @@ export default function Admin() {
                     <label className={styles.formLabel}>Image Reference & Preview</label>
                     <div className={styles.imageRefContainer}>
                         <div className={styles.imageInputs}>
-                            <input
-                                className={styles.imageTextInput}
-                                type="text"
-                                placeholder="Image filename (e.g. image.png)"
-                                value={item.Picture}
-                                onChange={(e) => updateLocalProject(item.ID, { Picture: e.currentTarget.value })}
-                            />
                             <select
                                 className={styles.imageSelectInput}
-                                value={images.some(img => img.name === item.Picture) ? item.Picture : ""}
+                                value={images.some((img) => img.name === item.Picture) ? item.Picture : ""}
                                 onChange={(e) => {
                                     if (e.currentTarget.value) {
-                                        updateLocalProject(item.ID, { Picture: e.currentTarget.value })
+                                        updateLocalProject(item.ID, { Picture: e.currentTarget.value });
                                     }
                                 }}
                             >
@@ -342,11 +344,7 @@ export default function Admin() {
                             </select>
                         </div>
                         <div className={styles.imagePreviewBox}>
-                            {item.Picture ? (
-                                <StorageImage path={item.Picture} alt={item.Title}  />
-                            ) : (
-                                <span style={{ color: "#888", fontSize: "0.8rem" }}>No image</span>
-                            )}
+                            {item.Picture ? <StorageImage path={item.Picture} alt={item.Title} /> : <span style={{ color: "#888", fontSize: "0.8rem" }}>No image</span>}
                         </div>
                     </div>
                 </div>
@@ -356,7 +354,7 @@ export default function Admin() {
                     <RichTextEditor
                         value={item.Description || ""}
                         onChangeAction={(content) => {
-                            updateLocalProject(item.ID, { Description: content })
+                            updateLocalProject(item.ID, { Description: content });
                         }}
                         placeholder="Write project description..."
                     />
@@ -379,7 +377,7 @@ export default function Admin() {
                     {savingId === item.ID && <span className={styles.statusMessage}>Saving changes...</span>}
                 </div>
             </div>
-        )
+        );
     }
 
     return (
@@ -407,11 +405,7 @@ export default function Admin() {
                         <h2 className={styles.sectionTitle}>🖼️ Media Assets Manager</h2>
                         <p className={styles.sectionSubtitle}>Upload, view, copy filename references, or delete images in storage (`portfolio-images`)</p>
                     </div>
-                    <button
-                        className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSmall}`}
-                        onClick={fetchImages}
-                        disabled={loadingImages}
-                    >
+                    <button className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSmall}`} onClick={fetchImages} disabled={loadingImages}>
                         🔄 {loadingImages ? "Refreshing..." : "Refresh"}
                     </button>
                 </div>
@@ -421,13 +415,7 @@ export default function Admin() {
                 <div className={styles.mediaUploadRow}>
                     <label className={`${styles.btn} ${styles.btnPrimary} ${styles.uploadInputWrapper}`}>
                         {uploading ? "⏳ Uploading..." : "➕ Upload Image(s)"}
-                        <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={handleUpload}
-                            disabled={uploading}
-                        />
+                        <input type="file" accept="image/*" multiple onChange={handleUpload} disabled={uploading} />
                     </label>
                     <span style={{ fontSize: "0.85rem", color: "#666" }}>
                         {images.length} image{images.length === 1 ? "" : "s"} stored
@@ -449,10 +437,7 @@ export default function Admin() {
                                     {img.name}
                                 </div>
                                 <div className={styles.mediaActions}>
-                                    <button
-                                        className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSmall}`}
-                                        onClick={() => copyToClipboard(img.name)}
-                                    >
+                                    <button className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSmall}`} onClick={() => copyToClipboard(img.name)}>
                                         {copiedPath === img.name ? "✓ Copied" : "📋 Copy"}
                                     </button>
                                     <button
@@ -499,8 +484,8 @@ export default function Admin() {
                         <button
                             className={`${styles.btn} ${styles.btnPrimary}`}
                             onClick={async () => {
-                                await saveGeneral("About Me Description", general["About Me Description"] ?? "")
-                                await saveGeneral("Profile Subtitle", general["Profile Subtitle"] ?? "")
+                                await saveGeneral("About Me Description", general["About Me Description"] ?? "");
+                                await saveGeneral("Profile Subtitle", general["Profile Subtitle"] ?? "");
                             }}
                             disabled={savingGeneralLabel !== null}
                         >
@@ -518,11 +503,7 @@ export default function Admin() {
                         <h2 className={styles.sectionTitle}>🚀 Projects</h2>
                         <p className={styles.sectionSubtitle}>Showcase of software and engineering projects</p>
                     </div>
-                    <button
-                        className={`${styles.btn} ${styles.btnPrimary}`}
-                        onClick={() => createItem("Project")}
-                        disabled={creatingType === "Project"}
-                    >
+                    <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => createItem("Project")} disabled={creatingType === "Project"}>
                         {creatingType === "Project" ? "Creating..." : "➕ Add Project"}
                     </button>
                 </div>
@@ -530,10 +511,7 @@ export default function Admin() {
                     {projects.length === 0 ? (
                         <div className={styles.emptySectionPrompt}>
                             <p>No projects found.</p>
-                            <button
-                                className={`${styles.btn} ${styles.btnPrimary}`}
-                                onClick={() => createItem("Project")}
-                            >
+                            <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => createItem("Project")}>
                                 ➕ Create First Project
                             </button>
                         </div>
@@ -550,11 +528,7 @@ export default function Admin() {
                         <h2 className={styles.sectionTitle}>💼 Work Experience</h2>
                         <p className={styles.sectionSubtitle}>Career history and professional roles</p>
                     </div>
-                    <button
-                        className={`${styles.btn} ${styles.btnPrimary}`}
-                        onClick={() => createItem("Work")}
-                        disabled={creatingType === "Work"}
-                    >
+                    <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => createItem("Work")} disabled={creatingType === "Work"}>
                         {creatingType === "Work" ? "Creating..." : "➕ Add Work Experience"}
                     </button>
                 </div>
@@ -562,10 +536,7 @@ export default function Admin() {
                     {works.length === 0 ? (
                         <div className={styles.emptySectionPrompt}>
                             <p>No work experience found.</p>
-                            <button
-                                className={`${styles.btn} ${styles.btnPrimary}`}
-                                onClick={() => createItem("Work")}
-                            >
+                            <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => createItem("Work")}>
                                 ➕ Create First Work Entry
                             </button>
                         </div>
@@ -582,11 +553,7 @@ export default function Admin() {
                         <h2 className={styles.sectionTitle}>🎯 Hobbies</h2>
                         <p className={styles.sectionSubtitle}>Personal interests and activities</p>
                     </div>
-                    <button
-                        className={`${styles.btn} ${styles.btnPrimary}`}
-                        onClick={() => createItem("Hobby")}
-                        disabled={creatingType === "Hobby"}
-                    >
+                    <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => createItem("Hobby")} disabled={creatingType === "Hobby"}>
                         {creatingType === "Hobby" ? "Creating..." : "➕ Add Hobby"}
                     </button>
                 </div>
@@ -594,10 +561,7 @@ export default function Admin() {
                     {hobbies.length === 0 ? (
                         <div className={styles.emptySectionPrompt}>
                             <p>No hobbies found.</p>
-                            <button
-                                className={`${styles.btn} ${styles.btnPrimary}`}
-                                onClick={() => createItem("Hobby")}
-                            >
+                            <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => createItem("Hobby")}>
                                 ➕ Create First Hobby
                             </button>
                         </div>
@@ -614,11 +578,7 @@ export default function Admin() {
                         <h2 className={styles.sectionTitle}>🎓 Education</h2>
                         <p className={styles.sectionSubtitle}>Academic qualifications and schooling (newest to oldest)</p>
                     </div>
-                    <button
-                        className={`${styles.btn} ${styles.btnPrimary}`}
-                        onClick={() => createItem("Education")}
-                        disabled={creatingType === "Education"}
-                    >
+                    <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => createItem("Education")} disabled={creatingType === "Education"}>
                         {creatingType === "Education" ? "Creating..." : "➕ Add Education"}
                     </button>
                 </div>
@@ -626,10 +586,7 @@ export default function Admin() {
                     {educations.length === 0 ? (
                         <div className={styles.emptySectionPrompt}>
                             <p>No education entries found.</p>
-                            <button
-                                className={`${styles.btn} ${styles.btnPrimary}`}
-                                onClick={() => createItem("Education")}
-                            >
+                            <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => createItem("Education")}>
                                 ➕ Create First Education Entry
                             </button>
                         </div>
@@ -639,5 +596,5 @@ export default function Admin() {
                 </div>
             </section>
         </div>
-    )
+    );
 }

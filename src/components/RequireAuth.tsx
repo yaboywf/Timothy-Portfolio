@@ -1,53 +1,71 @@
 import type { ComponentChildren } from "preact";
-import { useEffect, useState } from "preact/hooks"
-import { useLocation } from "preact-iso"
-import { supabase } from "../lib/supabase"
+import { useEffect, useState } from "preact/hooks";
+import { useLocation } from "preact-iso";
+import { auth } from "@/lib/neon";
+import { isAdminAllowed } from "@/lib/admin";
 
 export function RequireAuth({ children }: { children: ComponentChildren }) {
     const location = useLocation();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isLoading, setIsLoading] = useState(true)
+
+    const [isAllowed, setIsAllowed] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        let isMounted = true;
+        let mounted = true;
 
-        async function checkLogin() {
-            const { data } = await supabase.auth.getSession()
-            if (!isMounted) return;
+        async function checkAuth() {
+            try {
+                const { data } = await auth.getSession();
 
-            const hasSession = Boolean(data.session)
-            setIsLoggedIn(hasSession)
-            setIsLoading(false)
+                if (!mounted) return;
 
-            if (!hasSession) {
-                location.route("/login", true);
+                const email = data?.user?.email;
+
+                if (!email) {
+                    location.route("/login", true);
+                    return;
+                }
+
+                const allowed = await isAdminAllowed(email);
+
+                if (!mounted) return;
+
+                if (!allowed) {
+                    await auth.signOut();
+
+                    location.route("/login", true);
+
+                    return;
+                }
+
+                setIsAllowed(true);
+            } catch (error) {
+                console.error("Admin auth check failed:", error);
+
+                if (mounted) {
+                    location.route("/login", true);
+                }
+            } finally {
+                if (mounted) {
+                    setIsLoading(false);
+                }
             }
         }
 
-        checkLogin()
-
-        const { data: listener } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                if (!isMounted) return;
-
-                const hasSession = Boolean(session)
-                setIsLoggedIn(hasSession)
-                setIsLoading(false)
-
-                if (!hasSession) {
-                    location.route("/login", true);
-                }
-            },
-        )
+        checkAuth();
 
         return () => {
-            isMounted = false;
-            listener.subscription.unsubscribe()
-        }
-    }, [location])
+            mounted = false;
+        };
+    }, [location]);
 
-    if (isLoading) return <p>Loading...</p>
-    if (!isLoggedIn) return null
+    if (isLoading) {
+        return <p>Loading...</p>;
+    }
 
-    return <>{children}</>
+    if (!isAllowed) {
+        return null;
+    }
+
+    return <>{children}</>;
 }
